@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import {
-  Activity, ArrowRight, BarChart3, BriefcaseBusiness, Check, ChevronRight,
+  Activity, ArrowRight, BarChart3, Check, ChevronRight, Clock3,
   Compass, ExternalLink, Gauge, Linkedin, LineChart, Mail, MapPin, Menu,
   MessageCircle, MousePointer2, MousePointerClick, Phone, Route as RouteIcon,
   Search, SearchX, Send, Sparkles, Target, TrendingDown, Unplug, Users, X,
@@ -48,7 +48,7 @@ function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function CTA({ children = "Onboard & Scale My Brand", compact = false }: { children?: ReactNode; compact?: boolean }) {
+function CTA({ children = "Book Your Free Spot", compact = false }: { children?: ReactNode; compact?: boolean }) {
   return <Button variant="hero" size={compact ? "default" : "xl"} onClick={() => { track("cta_click", { label: String(children) }); scrollTo("contact"); }}>{children}<ArrowRight /></Button>;
 }
 
@@ -79,6 +79,53 @@ function Navbar() {
   </header>;
 }
 
+function Countdown() {
+  const [remaining, setRemaining] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  useEffect(() => {
+    const update = () => {
+      const now = new Date();
+      const close = new Date(now);
+      const daysUntilSunday = (7 - now.getDay()) % 7;
+      close.setDate(now.getDate() + daysUntilSunday);
+      close.setHours(23, 59, 59, 999);
+      const difference = Math.max(0, close.getTime() - now.getTime());
+      setRemaining({ hours: Math.floor(difference / 3_600_000), minutes: Math.floor((difference % 3_600_000) / 60_000), seconds: Math.floor((difference % 60_000) / 1000) });
+    };
+    update();
+    const timer = window.setInterval(update, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+  return <div className="grid grid-cols-3 gap-2" aria-label={`${remaining.hours} hours, ${remaining.minutes} minutes and ${remaining.seconds} seconds remaining`}>
+    {[[remaining.hours, "Hours"], [remaining.minutes, "Minutes"], [remaining.seconds, "Seconds"]].map(([value, label]) => <div key={String(label)} className="border border-on-dark/15 bg-surface-dark px-2 py-3 text-center"><strong className="block font-display text-2xl text-on-dark">{String(value).padStart(2, "0")}</strong><span className="text-[0.6rem] font-bold uppercase tracking-[0.12em] text-on-dark-muted">{label}</span></div>)}
+  </div>;
+}
+
+function HeroLeadForm() {
+  const submit = useServerFn(submitLead);
+  const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState("");
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); setState("loading"); setError("");
+    const form = new FormData(event.currentTarget);
+    try {
+      await submit({ data: { source: "contact", fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", message: "Free strategy call registration" } });
+      track("form_submitted", { form: "hero_registration" }); setState("success");
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Please check your details and try again."); setState("error"); }
+  };
+  if (state === "success") return <div className="grid min-h-[25rem] place-items-center border border-primary/30 bg-surface-dark-raised p-7 text-center"><div><span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground"><Check /></span><h2 className="mt-5 text-3xl font-semibold text-on-dark">You're In!</h2><p className="mt-3 text-sm text-on-dark-muted">Your free strategy call request is confirmed. We'll contact you shortly.</p></div></div>;
+  const field = "h-11 w-full border border-on-dark/20 bg-surface-dark px-4 text-sm text-on-dark outline-none placeholder:text-on-dark-muted focus:border-primary focus:ring-2 focus:ring-primary/20";
+  return <form onSubmit={onSubmit} onFocus={() => track("form_started", { form: "hero_registration" })} className="border border-on-dark/15 bg-surface-dark-raised p-5 shadow-2xl sm:p-7">
+    <div className="flex items-center justify-between gap-3 border-b border-on-dark/15 pb-4"><div><p className="text-xs font-bold uppercase tracking-[0.14em] text-primary">Free strategy call</p><p className="mt-1 font-display text-xl font-semibold text-on-dark">Reserve Your Spot</p></div><img src={portrait} alt="Bharat Hudadalli" className="h-14 w-14 rounded-full border-2 border-primary object-cover object-[58%_center]" /></div>
+    <div className="mt-5 flex items-center justify-between gap-4"><p className="text-sm font-semibold text-on-dark">Registration closes in</p><p className="flex items-center gap-2 text-xs font-bold text-primary"><Clock3 className="h-4 w-4"/>Limited slots</p></div>
+    <div className="mt-3"><Countdown /></div>
+    <div className="mt-5 flex items-end gap-3"><span className="text-sm text-on-dark-muted line-through">₹1,999</span><strong className="font-display text-3xl text-primary">₹0</strong><span className="pb-1 text-xs font-bold uppercase text-on-dark">Today</span></div>
+    <div className="mt-5 grid gap-3"><label className="sr-only" htmlFor="hero-name">Full name</label><input id="hero-name" required name="fullName" minLength={2} maxLength={100} autoComplete="name" placeholder="Full name" className={field}/><label className="sr-only" htmlFor="hero-email">Work email</label><input id="hero-email" required name="email" type="email" maxLength={255} autoComplete="email" placeholder="Work email" className={field}/><label className="sr-only" htmlFor="hero-phone">Phone number</label><input id="hero-phone" required name="phone" type="tel" maxLength={30} autoComplete="tel" placeholder="Phone number" className={field}/></div>
+    {error && <p role="alert" className="mt-3 text-sm text-destructive">{error}</p>}
+    <Button disabled={state === "loading"} type="submit" variant="hero" size="xl" className="mt-5 w-full">{state === "loading" ? "Reserving…" : "Book My Free Spot"}<ArrowRight /></Button>
+    <p className="mt-4 text-center text-xs text-on-dark-muted">Only a few free consultation slots are released each week.</p>
+  </form>;
+}
+
 function Hero() {
   return <section id="top" className="dark-grid relative overflow-hidden bg-surface-dark pb-20 pt-32 text-on-dark lg:pb-28 lg:pt-40">
     <div className="section-shell grid items-center gap-14 lg:grid-cols-[1.08fr_.92fr]">
@@ -87,19 +134,20 @@ function Hero() {
          <h1 className="max-w-3xl text-5xl font-semibold leading-[0.98] sm:text-6xl lg:text-7xl">Scale Your D2C Brand. <span className="text-primary">Faster.</span></h1>
          <p className="mt-7 max-w-xl text-lg leading-8 text-on-dark-muted">Get the end-to-end onboarding and growth strategy that gets your brand listed, visible and selling across India's leading marketplaces.</p>
          <p className="mt-4 max-w-xl text-sm leading-6 text-on-dark-muted">Amazon, Flipkart, Blinkit, Zepto and Instamart all play by different rules. Replace guesswork with hands-on, platform-specific support.</p>
-         <div className="mt-9 flex flex-col items-start gap-3 sm:flex-row"><CTA /><Button variant="quiet" size="xl" className="border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" onClick={() => scrollTo("services")}>Explore Services</Button></div>
+         <div className="mt-9 flex flex-col items-start gap-3 sm:flex-row"><CTA>Register for Free</CTA><Button variant="quiet" size="xl" className="border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" onClick={() => scrollTo("services")}>Explore Services</Button></div>
       </div>
-      <div className="relative mx-auto w-full max-w-[31rem]">
-         <div className="absolute -left-4 top-12 z-10 border border-primary/35 bg-surface-dark-raised/95 px-4 py-3 backdrop-blur sm:-left-10"><p className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-primary">Ranked Top 5%</p><p className="mt-1 font-display text-lg font-semibold">Topmate Creator</p></div>
-         <div className="relative aspect-[4/5] overflow-hidden border border-on-dark/15 bg-surface-dark-raised"><img src={portrait} alt="Bharat Hudadalli, e-commerce and quick-commerce growth consultant" width={1600} height={1067} fetchPriority="high" className="h-full w-full object-cover object-[58%_center]" /></div>
-        <div className="grid grid-cols-3 border-x border-b border-on-dark/15 bg-surface-dark-raised">{credibility.map((item) => <div key={item.label} className="border-r border-on-dark/15 px-3 py-4 last:border-r-0"><p className="font-display text-sm font-semibold text-primary sm:text-base">{item.value}</p><p className="mt-1 text-[0.62rem] uppercase leading-4 tracking-[0.1em] text-on-dark-muted">{item.label}</p></div>)}</div>
-      </div>
+       <div className="mx-auto w-full max-w-[31rem]"><HeroLeadForm /></div>
     </div>
   </section>;
 }
 
 function TrustBar() {
-   return <section className="border-b border-border bg-card py-9"><div className="section-shell"><p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Platforms I work across</p><div className="mt-7 grid grid-cols-3 gap-px border border-border bg-border sm:grid-cols-5 lg:grid-cols-9">{["Amazon", "Flipkart", "Myntra", "Blinkit", "Zepto", "Instamart", "BigBasket", "Nykaa", "Tata Cliq"].map((name) => <div key={name} className="grid h-16 place-items-center bg-card px-2 text-center font-display text-xs font-semibold text-foreground">{name}</div>)}</div></div></section>;
+   const platforms = [
+     ["Amazon", "/platform-logos/amazon.svg"], ["Flipkart", "/platform-logos/flipkart.png"], ["Myntra", "/platform-logos/myntra.svg"],
+     ["Blinkit", "/platform-logos/blinkit.svg"], ["Zepto", "/platform-logos/zepto.svg"], ["Instamart", "/platform-logos/swiggy.svg"],
+     ["BigBasket", "/platform-logos/bigbasket.svg"], ["Nykaa", "/platform-logos/nykaa.svg"], ["Tata Cliq", "/platform-logos/tatacliq.jpg"],
+   ];
+   return <section className="border-b border-border bg-card py-9"><div className="section-shell"><p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Platforms I work across</p><div className="mt-7 grid grid-cols-3 gap-px border border-border bg-border sm:grid-cols-5 lg:grid-cols-9">{platforms.map(([name, src]) => <div key={name} className="flex h-20 flex-col items-center justify-center gap-2 bg-card px-3"><img src={src} alt={`${name} logo`} loading="lazy" className="h-7 max-w-full object-contain"/><span className="text-[0.62rem] font-semibold text-muted-foreground">{name}</span></div>)}</div></div></section>;
 }
 
 function Problems() {
@@ -189,5 +237,5 @@ function LandingPage() {
     const onScroll = () => { const depth = Math.round(((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight) * 100); [25,50,75,90].forEach((mark) => { if (depth >= mark && !marks.has(mark)) { marks.add(mark); track("scroll_depth", { percent: String(mark) }); } }); };
     window.addEventListener("scroll", onScroll, { passive: true }); return () => window.removeEventListener("scroll", onScroll);
   }, []);
-   return <><Navbar/><main><Hero/><TrustBar/><Problems/><Services/><Process/><About/><WhyMe/><Results/><Testimonials/><LeadMagnet/><FAQ/><FinalCTA/><Contact/></main><Footer/><div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-surface-dark p-3 lg:hidden"><Button variant="hero" className="h-12 w-full" onClick={() => { track("cta_click", { label: "mobile_sticky" }); scrollTo("contact"); }}>Onboard & Scale My Brand <ArrowRight /></Button></div></>;
+   return <><Navbar/><main><Hero/><TrustBar/><Problems/><Services/><Process/><About/><WhyMe/><Results/><Testimonials/><LeadMagnet/><FAQ/><FinalCTA/><Contact/></main><Footer/><div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-surface-dark p-3 lg:hidden"><Button variant="hero" className="h-12 w-full" onClick={() => { track("cta_click", { label: "mobile_sticky" }); scrollTo("top"); }}>Book My Free Spot <ArrowRight /></Button></div></>;
 }
