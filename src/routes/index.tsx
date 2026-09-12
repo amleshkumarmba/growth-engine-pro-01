@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { submitLead } from "@/lib/leads.functions";
-import { caseStudies, credibility, faqs, pillars, problems, services, siteConfig, testimonials } from "@/lib/site-content";
+import { caseStudies, faqs, pillars, problems, services, siteConfig, testimonials } from "@/lib/site-content";
 import portrait from "@/assets/bharat-hudadalli.jpg";
 import logo from "@/assets/bscalex-logo.png.asset.json";
 
