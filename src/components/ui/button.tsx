@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        hero: "bg-primary text-primary-foreground shadow-[var(--shadow-cta)] hover:bg-primary-hover hover:-translate-y-0.5",
+        hero: "border border-primary-hover border-b-4 bg-primary text-primary-foreground shadow-[var(--shadow-cta)] hover:-translate-y-1 hover:bg-primary-hover hover:shadow-xl active:translate-y-0 active:border-b active:shadow-sm",
         inverted: "bg-foreground text-background hover:bg-foreground/90 hover:-translate-y-0.5",
         quiet: "border border-border/70 bg-transparent text-foreground hover:border-primary hover:text-primary",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
