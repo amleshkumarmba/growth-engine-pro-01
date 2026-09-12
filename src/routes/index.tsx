@@ -143,9 +143,9 @@ function Hero() {
 
 function TrustBar() {
    const platforms = [
-     ["Amazon", "/platform-logos/amazon.svg"], ["Flipkart", "/platform-logos/flipkart.png"], ["Myntra", "/platform-logos/myntra.svg"],
-     ["Blinkit", "/platform-logos/blinkit.svg"], ["Zepto", "/platform-logos/zepto.svg"], ["Instamart", "/platform-logos/swiggy.svg"],
-     ["BigBasket", "/platform-logos/bigbasket.svg"], ["Nykaa", "/platform-logos/nykaa.svg"], ["Tata Cliq", "/platform-logos/tatacliq.jpg"],
+     ["Amazon", "/platform-logos/amazon.png"], ["Flipkart", "/platform-logos/flipkart.png"], ["Myntra", "/platform-logos/myntra.png"],
+     ["Blinkit", "/platform-logos/blinkit.png"], ["Zepto", "/platform-logos/zepto.png"], ["Instamart", "/platform-logos/swiggy.svg"],
+     ["BigBasket", "/platform-logos/bigbasket.svg"], ["Nykaa", "/platform-logos/nykaa.png"], ["Tata Cliq", "/platform-logos/tatacliq.jpg"],
    ];
    return <section className="border-b border-border bg-card py-9"><div className="section-shell"><p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Platforms I work across</p><div className="mt-7 grid grid-cols-3 gap-px border border-border bg-border sm:grid-cols-5 lg:grid-cols-9">{platforms.map(([name, src]) => <div key={name} className="flex h-20 flex-col items-center justify-center gap-2 bg-card px-3"><img src={src} alt={`${name} logo`} loading="lazy" className="h-7 max-w-full object-contain"/><span className="text-[0.62rem] font-semibold text-muted-foreground">{name}</span></div>)}</div></div></section>;
 }
