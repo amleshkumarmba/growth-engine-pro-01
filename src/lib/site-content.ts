@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "Bharat Hudadalli",
   brand: "BscaleX",
-  eyebrow: "DIGITAL GROWTH • PERFORMANCE MARKETING • BUSINESS GROWTH",
+  eyebrow: "E-COMMERCE • Q-COMMERCE • MARKETPLACE GROWTH",
   linkedin: "https://www.linkedin.com/in/bharathud/",
   bookingUrl: "#contact",
   email: "[EMAIL ADDRESS]",
@@ -19,60 +19,51 @@ export const siteConfig = {
 } as const;
 
 export const credibility = [
-  { value: "[EXPERIENCE]", label: "Years of experience" },
-  { value: "[PROJECTS]", label: "Growth engagements" },
-  { value: "Multi-channel", label: "Growth strategy" },
+  { value: "Top 5%", label: "Topmate creator" },
+  { value: "9", label: "Core platforms" },
+  { value: "1:1", label: "Direct access" },
 ] as const;
 
 export const problems = [
-  ["TrendingDown", "Expensive leads", "You are spending more each month, while lead quality and sales readiness stay flat."],
-  ["Activity", "Unpredictable pipeline", "Results rise and fall without a clear system your team can plan around."],
-  ["MousePointerClick", "Traffic that doesn't convert", "Clicks arrive, but weak offers and journeys lose prospects before they act."],
-  ["BarChart3", "Vanity-first reporting", "Dashboards look busy without showing what actually influences revenue."],
-  ["Unplug", "Disconnected teams", "Marketing and sales work from different signals, creating friction and lost follow-up."],
-  ["SearchX", "Hidden funnel leaks", "You know growth is being lost, but not precisely where or what to fix first."],
+  ["Unplug", "Onboarding delays", "Marketplace paperwork, verification and compliance keep your products offline longer than they should."],
+  ["Activity", "Reactive account management", "Catalog, inventory, pricing and account-health issues are handled only after sales are affected."],
+  ["SearchX", "Low marketplace visibility", "Your products are listed, but weak positioning makes them difficult for the right customers to discover."],
+  ["BarChart3", "Unclear platform strategy", "Amazon, Flipkart and quick-commerce channels each need a different operating playbook."],
+  ["MousePointerClick", "The wrong SKU mix", "Products enter fast-delivery channels without the selection or positioning needed to win."],
+  ["TrendingDown", "Operational revenue leaks", "Vendor and account bottlenecks quietly reduce availability, margins and sales velocity."],
 ] as const;
 
 export const pillars = [
-  ["01", "Strategy", "Build a focused acquisition plan around your goals, margins, audience and offer."],
-  ["02", "Performance Marketing", "Launch and improve campaigns across Meta, Google and the channels that fit."],
-  ["03", "Conversion Optimization", "Strengthen landing pages, funnels, offers and the moments that shape decisions."],
-  ["04", "Analytics & Growth", "Measure the signals tied to revenue and turn them into an ongoing improvement loop."],
+  ["01", "Understand", "Map your product, current platform presence, goals and gaps."],
+  ["02", "Diagnose", "Identify the real blocker across onboarding, account health or Q-commerce."],
+  ["03", "Plan", "Build a clear, platform-specific roadmap in the right priority order."],
+  ["04", "Execute", "Stay hands-on, monitor performance and adjust as the brand grows."],
 ] as const;
 
 export const services = [
-  ["Gauge", "Performance Marketing", "Build a measurable paid growth system around real business outcomes."],
-  ["Megaphone", "Meta Ads", "Create, test and refine campaigns built to attract qualified demand."],
-  ["Search", "Google Ads", "Capture high-intent searches with efficient, accountable campaigns."],
-  ["Users", "Lead Generation", "Design acquisition journeys that prioritize fit, intent and sales readiness."],
-  ["MousePointer2", "Conversion Optimization", "Remove friction across landing pages, offers and lead journeys."],
-  ["Compass", "Marketing Strategy", "Turn scattered activity into a focused, commercially aligned roadmap."],
-  ["Route", "Sales Funnel Optimization", "Connect every step from first click to qualified conversation."],
-  ["LineChart", "Analytics & Attribution", "See which actions and channels genuinely contribute to growth."],
-  ["Sparkles", "AI-Powered Marketing", "Use practical automation to improve speed, insight and execution quality."],
+  ["Route", "D2C Brand Onboarding", "End-to-end support to get your brand listed, verified and compliant on major e-commerce and quick-commerce platforms."],
+  ["Gauge", "Marketplace Management", "Ongoing catalog, inventory, pricing and account-health management across Amazon, Flipkart and Myntra."],
+  ["Sparkles", "Q-Commerce Strategy", "Positioning, SKU selection and growth planning for Blinkit, Zepto and Swiggy Instamart."],
+  ["Users", "Vendor Consulting", "Resolve vendor relationship and operational bottlenecks before they affect visibility and revenue."],
+  ["Compass", "1:1 Growth Strategy", "A custom roadmap to improve visibility, sales velocity and margins across your selling channels."],
 ] as const;
 
 export const caseStudies = [
-  { industry: "[B2B / SaaS]", challenge: "[QUALIFIED LEAD CHALLENGE]", strategy: "[FUNNEL + MEDIA STRATEGY]", result: "[VERIFIED RESULT]" },
-  { industry: "[D2C / E-COMMERCE]", challenge: "[ACQUISITION COST CHALLENGE]", strategy: "[CHANNEL + OFFER STRATEGY]", result: "[VERIFIED RESULT]" },
-  { industry: "[SERVICES BUSINESS]", challenge: "[CONVERSION CHALLENGE]", strategy: "[LANDING PAGE + LEAD FLOW]", result: "[VERIFIED RESULT]" },
+  { industry: "Cos-IQ", challenge: "Multi-platform marketplace readiness", strategy: "Complete onboarding assistance and account management", result: "Featured on Shark Tank India" },
+  { industry: "Arata", challenge: "Marketplace onboarding and account operations", strategy: "Complete onboarding assistance and account management", result: "Featured on Shark Tank India" },
 ] as const;
 
 export const testimonials = [
-  { quote: "[Add a verified client quote about the working experience and measurable impact.]", name: "[CLIENT NAME]", role: "[DESIGNATION, COMPANY]" },
-  { quote: "[Add a verified client quote about strategic clarity, execution and communication.]", name: "[CLIENT NAME]", role: "[DESIGNATION, COMPANY]" },
-  { quote: "[Add a verified client quote about lead quality, conversion or sustainable growth.]", name: "[CLIENT NAME]", role: "[DESIGNATION, COMPANY]" },
+  { quote: "Bharat played a pivotal role in facilitating our onboarding process at Amazon – RK World, demonstrating immense dedication and support. His profound understanding of e-commerce greatly contributed to our successful integration.", name: "Shalini Singh", role: "Key Account Manager, Cipla" },
+  { quote: "Mr. Bharat is a highly motivated and knowledgeable expert in e-commerce onboarding and account management. He is supremely dedicated, honest about his work and supports his clients in all sorts.", name: "E-Commerce Client", role: "Verified review from the reference site" },
+  { quote: "I'm delighted to recommend Bharath for his skills in e-commerce, vendor onboarding, key account management and month-on-month growth. His negotiation skills lead to advantageous, win-win outcomes.", name: "Business Partner", role: "Verified review from the reference site" },
 ] as const;
 
 export const faqs = [
-  ["Who do you typically work with?", "I work with ambitious founders, marketing leaders and growth-focused teams that want a clearer, more accountable path to demand and revenue."],
-  ["What industries do you specialize in?", "The approach is built around business fundamentals and can be adapted across B2B, services, e-commerce and digitally enabled businesses after a fit assessment."],
-  ["Do you work with startups and established businesses?", "Yes. The engagement is shaped around your current stage, operating constraints and growth objective."],
-  ["What services do you provide?", "Strategy, performance marketing, lead generation, conversion optimization, funnel improvement, analytics and practical AI-enabled marketing."],
-  ["What is the minimum advertising budget?", "There is no universal number. We will assess whether your budget, economics and target market can support a sensible testing plan."],
-  ["How quickly can we expect results?", "Timing depends on your offer, market, data and starting point. You will receive clear leading indicators and honest expectations before execution begins."],
-  ["Do you provide strategy as well as execution?", "Yes. Engagements can cover strategic direction, hands-on execution or a focused combination of both."],
-  ["Can you audit our existing campaigns?", "Yes. A growth audit can identify tracking gaps, wasted spend, funnel friction and the highest-priority opportunities."],
-  ["Do you work on a monthly retainer or project basis?", "Both models are possible. The right structure depends on whether you need a focused intervention or ongoing optimization."],
-  ["How do I get started?", "Book a free strategy call or request a growth audit. We will clarify the goal, assess fit and agree on the most useful next step."],
+  ["What does a D2C brand onboarding consultant do?", "A D2C brand onboarding consultant helps new and growing brands get listed, verified and compliant on e-commerce marketplaces and quick-commerce platforms while avoiding setup mistakes that delay launch."],
+  ["Which platforms does Bharat specialize in?", "Amazon, Flipkart, Myntra, Blinkit, Zepto, Swiggy Instamart, BigBasket, Nykaa and Tata Cliq."],
+  ["Can you help with both onboarding and ongoing management?", "Yes. Support can cover initial listings and compliance, followed by catalog, inventory, pricing and account-health management."],
+  ["Do you offer quick-commerce strategy?", "Yes. The work includes platform-specific positioning, SKU selection and growth planning for fast-delivery channels."],
+  ["Can I book a one-time strategy session?", "Yes. A focused 1:1 session can help diagnose your current bottleneck and create a practical action plan."],
+  ["How do I get started?", "Share your brand and current challenge through the form. Bharat will review the details and recommend the most useful next step."],
 ] as const;
