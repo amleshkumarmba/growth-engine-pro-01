@@ -24,8 +24,16 @@ export type Database = {
           message: string | null
           monthly_budget: string | null
           phone: string | null
+          platform: string | null
           source: string
           status: string
+          utm_ad: string | null
+          utm_adset: string | null
+          utm_campaign: string | null
+          utm_device: string | null
+          utm_medium: string | null
+          utm_placement: string | null
+          utm_source: string | null
           website_url: string | null
         }
         Insert: {
@@ -37,8 +45,16 @@ export type Database = {
           message?: string | null
           monthly_budget?: string | null
           phone?: string | null
+          platform?: string | null
           source: string
           status?: string
+          utm_ad?: string | null
+          utm_adset?: string | null
+          utm_campaign?: string | null
+          utm_device?: string | null
+          utm_medium?: string | null
+          utm_placement?: string | null
+          utm_source?: string | null
           website_url?: string | null
         }
         Update: {
@@ -50,8 +66,16 @@ export type Database = {
           message?: string | null
           monthly_budget?: string | null
           phone?: string | null
+          platform?: string | null
           source?: string
           status?: string
+          utm_ad?: string | null
+          utm_adset?: string | null
+          utm_campaign?: string | null
+          utm_device?: string | null
+          utm_medium?: string | null
+          utm_placement?: string | null
+          utm_source?: string | null
           website_url?: string | null
         }
         Relationships: []

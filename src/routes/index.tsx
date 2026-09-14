@@ -44,6 +44,18 @@ function track(event: string, details: Record<string, string> = {}) {
   win.dataLayer.push({ event, ...details });
 }
 
+const PLATFORM_OPTIONS = ["Zepto", "Instamart", "Blinkit", "Flipkart Minutes", "Amazon Now"];
+
+function getUtmParams() {
+  if (typeof window === "undefined") return {};
+  const params = new URLSearchParams(window.location.search);
+  const pick = (key: string) => params.get(key)?.slice(0, 200) ?? "";
+  return {
+    utmSource: pick("utm_source"), utmMedium: pick("utm_medium"), utmCampaign: pick("utm_campaign"),
+    utmAdset: pick("utm_adset"), utmAd: pick("utm_ad"), utmPlacement: pick("utm_placement"), utmDevice: pick("utm_device"),
+  };
+}
+
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -108,7 +120,7 @@ function HeroLeadForm() {
     event.preventDefault(); setState("loading"); setError("");
     const form = new FormData(event.currentTarget);
     try {
-      await submit({ data: { source: "contact", fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", message: "Free strategy call registration" } });
+      await submit({ data: { source: "contact", fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", platform: String(form.get("platform") ?? ""), message: "Free strategy call registration", ...getUtmParams() } });
       track("form_submitted", { form: "hero_registration" }); setState("success");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Please check your details and try again."); setState("error"); }
   };
@@ -119,7 +131,7 @@ function HeroLeadForm() {
     <div className="mt-5 flex items-center justify-between gap-4"><p className="text-sm font-semibold text-on-dark">Registration closes in</p><p className="flex items-center gap-2 text-xs font-bold text-primary"><Clock3 className="h-4 w-4"/>Limited slots</p></div>
     <div className="mt-3"><Countdown /></div>
     <div className="mt-5 flex items-end gap-3"><span className="text-sm text-on-dark-muted line-through">₹1,999</span><strong className="font-display text-3xl text-primary">₹0</strong><span className="pb-1 text-xs font-bold uppercase text-on-dark">Today</span></div>
-    <div className="mt-5 grid gap-3"><label className="sr-only" htmlFor="hero-name">Full name</label><input id="hero-name" required name="fullName" minLength={2} maxLength={100} autoComplete="name" placeholder="Full name" className={field}/><label className="sr-only" htmlFor="hero-email">Work email</label><input id="hero-email" required name="email" type="email" maxLength={255} autoComplete="email" placeholder="Work email" className={field}/><label className="sr-only" htmlFor="hero-phone">Phone number</label><input id="hero-phone" required name="phone" type="tel" maxLength={30} autoComplete="tel" placeholder="Phone number" className={field}/></div>
+    <div className="mt-5 grid gap-3"><label className="sr-only" htmlFor="hero-name">Full name</label><input id="hero-name" required name="fullName" minLength={2} maxLength={100} autoComplete="name" placeholder="Full name" className={field}/><label className="sr-only" htmlFor="hero-email">Work email</label><input id="hero-email" required name="email" type="email" maxLength={255} autoComplete="email" placeholder="Work email" className={field}/><label className="sr-only" htmlFor="hero-phone">Phone number</label><input id="hero-phone" required name="phone" type="tel" maxLength={30} autoComplete="tel" placeholder="Phone number" className={field}/><label className="sr-only" htmlFor="hero-platform">Where do you want to list your products?</label><select id="hero-platform" required name="platform" defaultValue="" className={field}><option value="" disabled>Where do you want to list your products?</option>{PLATFORM_OPTIONS.map((option) => <option key={option}>{option}</option>)}</select></div>
     {error && <p role="alert" className="mt-3 text-sm text-destructive">{error}</p>}
     <Button disabled={state === "loading"} type="submit" variant="hero" size="xl" className="mt-5 w-full">{state === "loading" ? "Reserving…" : "Book My Free Spot"}<ArrowRight /></Button>
     <p className="mt-4 text-center text-xs text-on-dark-muted">Only a few free consultation slots are released each week.</p>
@@ -193,7 +205,7 @@ function LeadForm({ kind }: { kind: LeadKind }) {
     event.preventDefault(); setState("loading"); setError("");
     const form = new FormData(event.currentTarget);
     try {
-      await submit({ data: { source: kind, fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: String(form.get("companyName") ?? ""), websiteUrl: String(form.get("websiteUrl") ?? ""), monthlyBudget: String(form.get("monthlyBudget") ?? ""), message: String(form.get("message") ?? "") } });
+      await submit({ data: { source: kind, fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: String(form.get("companyName") ?? ""), websiteUrl: String(form.get("websiteUrl") ?? ""), monthlyBudget: String(form.get("monthlyBudget") ?? ""), platform: String(form.get("platform") ?? ""), message: String(form.get("message") ?? ""), ...getUtmParams() } });
       track("form_submitted", { form: kind }); setState("success");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Please check your details and try again."); setState("error"); }
   };
@@ -205,6 +217,7 @@ function LeadForm({ kind }: { kind: LeadKind }) {
     <label className="text-xs font-bold uppercase tracking-[0.1em]">Phone<input name="phone" type="tel" maxLength={30} autoComplete="tel" className={`${input} mt-2`} /></label>
     <label className="text-xs font-bold uppercase tracking-[0.1em]">Company<input name="companyName" maxLength={120} autoComplete="organization" className={`${input} mt-2`} /></label>
     {kind === "growth_audit" && <><label className="text-xs font-bold uppercase tracking-[0.1em]">Website URL<input name="websiteUrl" type="url" maxLength={500} placeholder="https://" className={`${input} mt-2`} /></label><label className="text-xs font-bold uppercase tracking-[0.1em]">Monthly Marketing Budget<select name="monthlyBudget" className={`${input} mt-2`} defaultValue=""><option value="" disabled>Select a range</option><option>Under ₹1 lakh</option><option>₹1–5 lakh</option><option>₹5–15 lakh</option><option>₹15 lakh+</option><option>Not currently spending</option></select></label></>}
+    <label className="text-xs font-bold uppercase tracking-[0.1em] sm:col-span-2">Where Do You Want to List Your Products?<select required name="platform" defaultValue="" className={`${input} mt-2`}><option value="" disabled>Select a platform</option>{PLATFORM_OPTIONS.map((option) => <option key={option}>{option}</option>)}</select></label>
     <label className="text-xs font-bold uppercase tracking-[0.1em] sm:col-span-2">{kind === "growth_audit" ? "Biggest Growth Challenge" : "Message"}<textarea required name="message" minLength={10} maxLength={1500} rows={5} className={`${input} mt-2 h-auto py-3`} /></label>
     {error && <p role="alert" className="text-sm text-destructive sm:col-span-2">{error}</p>}
     <div className="sm:col-span-2"><Button disabled={state === "loading"} type="submit" variant="hero" size="xl">{state === "loading" ? "Sending…" : kind === "growth_audit" ? "Get My Free Growth Audit" : "Send Inquiry"}<ArrowRight /></Button><p className="mt-3 text-xs text-muted-foreground">Your details are used only to respond to your enquiry.</p></div>
