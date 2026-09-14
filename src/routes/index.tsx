@@ -44,6 +44,18 @@ function track(event: string, details: Record<string, string> = {}) {
   win.dataLayer.push({ event, ...details });
 }
 
+const PLATFORM_OPTIONS = ["Zepto", "Instamart", "Blinkit", "Flipkart Minutes", "Amazon Now"];
+
+function getUtmParams() {
+  if (typeof window === "undefined") return {};
+  const params = new URLSearchParams(window.location.search);
+  const pick = (key: string) => params.get(key)?.slice(0, 200) ?? "";
+  return {
+    utmSource: pick("utm_source"), utmMedium: pick("utm_medium"), utmCampaign: pick("utm_campaign"),
+    utmAdset: pick("utm_adset"), utmAd: pick("utm_ad"), utmPlacement: pick("utm_placement"), utmDevice: pick("utm_device"),
+  };
+}
+
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -108,7 +120,7 @@ function HeroLeadForm() {
     event.preventDefault(); setState("loading"); setError("");
     const form = new FormData(event.currentTarget);
     try {
-      await submit({ data: { source: "contact", fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", message: "Free strategy call registration" } });
+      await submit({ data: { source: "contact", fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", platform: String(form.get("platform") ?? ""), message: "Free strategy call registration", ...getUtmParams() } });
       track("form_submitted", { form: "hero_registration" }); setState("success");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Please check your details and try again."); setState("error"); }
   };
