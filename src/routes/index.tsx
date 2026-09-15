@@ -225,7 +225,7 @@ function FinalCTA() {
 }
 
 function Contact() {
-   return <section id="contact" className="py-24 lg:py-32"><div className="section-shell grid gap-12 lg:grid-cols-[.75fr_1.25fr] lg:gap-20"><div><SectionHeading eyebrow="Start a conversation" title="Let's Scale Your Brand" copy="Tell me where you sell today and what's blocking your next stage of marketplace growth."/><div className="mt-9 space-y-4"><a href={siteConfig.linkedin} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-sm"><Linkedin className="h-5 w-5 text-primary"/>Connect on LinkedIn <ExternalLink className="h-3 w-3"/></a><p className="flex items-center gap-3 text-sm"><MapPin className="h-5 w-5 text-primary"/>Bengaluru, India</p></div></div><div><RegistrationForm source="contact" formName="contact" /></div></section>;
+   return <section id="contact" className="py-24 lg:py-32"><div className="section-shell grid gap-12 lg:grid-cols-[.75fr_1.25fr] lg:gap-20"><div><SectionHeading eyebrow="Start a conversation" title="Let's Scale Your Brand" copy="Tell me where you sell today and what's blocking your next stage of marketplace growth."/><div className="mt-9 space-y-4"><a href={siteConfig.linkedin} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-sm"><Linkedin className="h-5 w-5 text-primary"/>Connect on LinkedIn <ExternalLink className="h-3 w-3"/></a><p className="flex items-center gap-3 text-sm"><MapPin className="h-5 w-5 text-primary"/>Bengaluru, India</p></div></div><div><RegistrationForm source="contact" formName="contact" /></div></div></section>;
 }
 
 function Footer() {
