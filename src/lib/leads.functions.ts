@@ -40,6 +40,7 @@ async function appendToSheet(data: z.infer<typeof leadSchema>) {
     data.websiteUrl ?? "",
     data.monthlyBudget ?? "",
     data.platform ?? "",
+    data.city ?? "",
     data.message,
     data.utmSource ?? "",
     data.utmMedium ?? "",

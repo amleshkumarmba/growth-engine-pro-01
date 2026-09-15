@@ -8,6 +8,13 @@
       "when": 1789237665635,
       "tag": "0000_create_public_leads",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789467781808,
+      "tag": "0001_add_city_to_leads",
+      "breakpoints": true
     }
   ]
 }
