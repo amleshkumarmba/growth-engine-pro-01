@@ -127,16 +127,28 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: GTM_CODE }} />
         <HeadContent />
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} />
+        <script dangerouslySetInnerHTML={{ __html: GA_CODE }} />
         <script dangerouslySetInnerHTML={{ __html: META_PIXEL_CODE }} />
       </head>
       <body>
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-WX4KD5BR"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+            title="Google Tag Manager"
+          />
+        </noscript>
         <noscript>
           <img
             height="1"
             width="1"
             style={{ display: "none" }}
-            src="https://www.facebook.com/tr?id=1777322820207151&ev=PageView&noscript=1"
+            src="https://www.facebook.com/tr?id=1604292191391028&ev=PageView&noscript=1"
             alt=""
           />
         </noscript>
