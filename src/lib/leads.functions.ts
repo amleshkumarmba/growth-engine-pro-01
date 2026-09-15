@@ -86,6 +86,7 @@ export const submitLead = createServerFn({ method: "POST" })
       website_url: data.websiteUrl || null,
       monthly_budget: data.monthlyBudget || null,
       platform: data.platform || null,
+      city: data.city || null,
       message: data.message,
       utm_source: data.utmSource || null,
       utm_medium: data.utmMedium || null,
