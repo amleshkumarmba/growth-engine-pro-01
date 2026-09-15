@@ -30,12 +30,17 @@ async function appendToSheet(data: z.infer<typeof leadSchema>) {
   const connectionKey = process.env["GOOGLE_SHEETS_API_KEY"];
   if (!lovableKey || !connectionKey) return;
 
+  const asSheetText = (value: string | undefined) => {
+    const text = value ?? "";
+    // Prevent Google Sheets from interpreting +91... as a formula.
+    return text.startsWith("+") ? `'${text}` : text;
+  };
   const row = [
     new Date().toISOString(),
     data.source,
     data.fullName,
     data.email,
-    data.phone ?? "",
+    asSheetText(data.phone),
     data.companyName ?? "",
     data.websiteUrl ?? "",
     data.monthlyBudget ?? "",
