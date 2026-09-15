@@ -45,6 +45,8 @@ function track(event: string, details: Record<string, string> = {}) {
 }
 
 const PLATFORM_OPTIONS = ["Zepto", "Instamart", "Blinkit", "Flipkart Minutes", "Amazon Now"];
+const WEBINAR_DATE = new Date("2026-09-27T23:59:59+05:30");
+const WEBINAR_DATE_LABEL = "27th September 2026";
 
 function getUtmParams() {
   if (typeof window === "undefined") return {};
@@ -60,8 +62,12 @@ function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function CTA({ children = "Book Your Free Spot", compact = false }: { children?: ReactNode; compact?: boolean }) {
-  return <Button variant="hero" size={compact ? "default" : "xl"} onClick={() => { track("cta_click", { label: String(children) }); scrollTo("contact"); }}>{children}<ArrowRight /></Button>;
+function CTA({ children = "Get My Free Seat", compact = false }: { children?: ReactNode; compact?: boolean }) {
+  return <Button variant="hero" size={compact ? "default" : "xl"} onClick={() => { track("cta_click", { label: String(children) }); scrollTo("top"); }}>{children}<ArrowRight /></Button>;
+}
+
+function UrgencyBadge({ children }: { children: ReactNode }) {
+  return <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.08em] text-primary"><span className="h-2 w-2 animate-pulse rounded-full bg-primary" />{children}</span>;
 }
 
 function SectionHeading({ eyebrow, title, copy, light = false }: { eyebrow: string; title: string; copy?: string; light?: boolean }) {
@@ -84,7 +90,7 @@ function Navbar() {
   return <header className={`fixed inset-x-0 top-0 z-50 border-b transition-all ${solid || open ? "border-border/20 bg-surface-dark/95 backdrop-blur-xl" : "border-transparent bg-transparent"}`}>
     <nav className="section-shell grid h-20 grid-cols-[minmax(0,1fr)_auto] items-center gap-5" aria-label="Primary navigation">
       <a href="#top" className="flex min-w-0 items-center" aria-label="BscaleX home"><img src={logo.url} alt="BscaleX" className="h-14 w-auto object-contain object-left" /></a>
-       <div className="hidden items-center gap-7 lg:flex">{links.map(([label, id]) => <a key={id} href={`#${id}`} className="text-xs font-semibold text-on-dark-muted transition-colors hover:text-on-dark">{label}</a>)}<CTA compact>Let's Talk</CTA></div>
+       <div className="hidden items-center gap-7 lg:flex">{links.map(([label, id]) => <a key={id} href={`#${id}`} className="text-xs font-semibold text-on-dark-muted transition-colors hover:text-on-dark">{label}</a>)}<CTA compact>Get My Free Seat</CTA></div>
       <Button variant="ghost" size="icon" className="text-on-dark hover:bg-on-dark/10 hover:text-on-dark lg:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? "Close menu" : "Open menu"}>{open ? <X /> : <Menu />}</Button>
     </nav>
      {open && <div className="border-t border-border/20 bg-surface-dark px-4 pb-6 lg:hidden">{links.map(([label, id]) => <a key={id} href={`#${id}`} onClick={() => setOpen(false)} className="block border-b border-border/15 py-4 font-semibold text-on-dark">{label}</a>)}<div className="pt-5"><CTA /></div></div>}
@@ -92,27 +98,27 @@ function Navbar() {
 }
 
 function Countdown() {
-  const [remaining, setRemaining] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [remaining, setRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   useEffect(() => {
     const update = () => {
-      const now = new Date();
-      const close = new Date(now);
-      const daysUntilSunday = (7 - now.getDay()) % 7;
-      close.setDate(now.getDate() + daysUntilSunday);
-      close.setHours(23, 59, 59, 999);
-      const difference = Math.max(0, close.getTime() - now.getTime());
-      setRemaining({ hours: Math.floor(difference / 3_600_000), minutes: Math.floor((difference % 3_600_000) / 60_000), seconds: Math.floor((difference % 60_000) / 1000) });
+      const difference = Math.max(0, WEBINAR_DATE.getTime() - Date.now());
+      setRemaining({
+        days: Math.floor(difference / 86_400_000),
+        hours: Math.floor((difference % 86_400_000) / 3_600_000),
+        minutes: Math.floor((difference % 3_600_000) / 60_000),
+        seconds: Math.floor((difference % 60_000) / 1000),
+      });
     };
     update();
     const timer = window.setInterval(update, 1000);
     return () => window.clearInterval(timer);
   }, []);
-  return <div className="grid grid-cols-3 gap-2" aria-label={`${remaining.hours} hours, ${remaining.minutes} minutes and ${remaining.seconds} seconds remaining`}>
-    {[[remaining.hours, "Hours"], [remaining.minutes, "Minutes"], [remaining.seconds, "Seconds"]].map(([value, label]) => <div key={String(label)} className="border border-on-dark/15 bg-surface-dark px-2 py-3 text-center"><strong className="block font-display text-2xl text-on-dark">{String(value).padStart(2, "0")}</strong><span className="text-[0.6rem] font-bold uppercase tracking-[0.12em] text-on-dark-muted">{label}</span></div>)}
+  return <div className="grid grid-cols-4 gap-2" aria-label={`${remaining.days} days, ${remaining.hours} hours, ${remaining.minutes} minutes and ${remaining.seconds} seconds remaining`}>
+    {[[remaining.days, "Days"], [remaining.hours, "Hours"], [remaining.minutes, "Minutes"], [remaining.seconds, "Seconds"]].map(([value, label]) => <div key={String(label)} className="border border-on-dark/15 bg-surface-dark px-2 py-3 text-center"><strong className="block font-display text-2xl text-on-dark">{String(value).padStart(2, "0")}</strong><span className="text-[0.6rem] font-bold uppercase tracking-[0.12em] text-on-dark-muted">{label}</span></div>)}
   </div>;
 }
 
-function HeroLeadForm() {
+function RegistrationForm({ source = "contact", formName = "registration" }: { source?: "growth_audit" | "contact"; formName?: string }) {
   const submit = useServerFn(submitLead);
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState("");
@@ -120,21 +126,31 @@ function HeroLeadForm() {
     event.preventDefault(); setState("loading"); setError("");
     const form = new FormData(event.currentTarget);
     try {
-      await submit({ data: { source: "contact", fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", platform: String(form.get("platform") ?? ""), message: "Free strategy call registration", ...getUtmParams() } });
-      track("form_submitted", { form: "hero_registration" }); setState("success");
+      await submit({ data: { source, fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", city: String(form.get("city") ?? ""), platform: String(form.get("platform") ?? ""), message: "Free webinar seat registration", ...getUtmParams() } });
+      track("form_submitted", { form: formName }); setState("success");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Please check your details and try again."); setState("error"); }
   };
-  if (state === "success") return <div className="grid min-h-[25rem] place-items-center border border-primary/30 bg-surface-dark-raised p-7 text-center"><div><span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground"><Check /></span><h2 className="mt-5 text-3xl font-semibold text-on-dark">You're In!</h2><p className="mt-3 text-sm text-on-dark-muted">Your free strategy call request is confirmed. We'll contact you shortly.</p></div></div>;
-  const field = "h-11 w-full border border-on-dark/20 bg-surface-dark px-4 text-sm text-on-dark outline-none placeholder:text-on-dark-muted focus:border-primary focus:ring-2 focus:ring-primary/20";
-  return <form onSubmit={onSubmit} onFocus={() => track("form_started", { form: "hero_registration" })} className="border border-on-dark/15 bg-surface-dark-raised p-5 shadow-2xl sm:p-7">
-    <div className="flex items-center justify-between gap-3 border-b border-on-dark/15 pb-4"><div><p className="text-xs font-bold uppercase tracking-[0.14em] text-primary">Free strategy call</p><p className="mt-1 font-display text-xl font-semibold text-on-dark">Reserve Your Spot</p></div><img src={portrait} alt="Bharat Hudadalli" className="h-14 w-14 rounded-full border-2 border-primary object-cover object-[58%_center]" /></div>
+  if (state === "success") return <div className="grid min-h-[25rem] place-items-center rounded-2xl border border-primary/30 bg-surface-dark p-7 text-center"><div><span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground"><Check /></span><h2 className="mt-5 text-3xl font-semibold text-on-dark">You're In!</h2><p className="mt-3 text-sm text-on-dark-muted">Your free seat for the {WEBINAR_DATE_LABEL} webinar is reserved. We'll send the joining link on WhatsApp and email.</p><Button className="mt-7" variant="hero" size="lg" onClick={() => { track("cta_click", { label: "success_register_another" }); scrollTo("top"); }}>Register Another Seat <ArrowRight /></Button></div></div>;
+  const field = "h-12 w-full rounded-md border border-on-dark/20 bg-surface-dark px-4 text-sm text-on-dark outline-none placeholder:text-on-dark-muted focus:border-primary focus:ring-2 focus:ring-primary/20";
+  const label = "text-xs font-bold uppercase tracking-[0.1em] text-on-dark";
+  return <form onSubmit={onSubmit} onFocus={() => track("form_started", { form: formName })} className="rounded-2xl border border-on-dark/15 bg-surface-dark-raised p-5 shadow-2xl sm:p-7">
+    <div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-primary px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-primary-foreground">100% Free · ₹0</span><UrgencyBadge>Only 5 free seats left</UrgencyBadge></div>
+    <h2 className="mt-5 font-display text-2xl font-semibold uppercase leading-tight text-on-dark sm:text-3xl">Reserve Your <span className="text-primary">Free</span> Seat</h2>
+    <p className="mt-2 text-sm text-on-dark-muted">90 minutes live · Hindi & English · {WEBINAR_DATE_LABEL}</p>
     <div className="mt-5 flex items-center justify-between gap-4"><p className="text-sm font-semibold text-on-dark">Registration closes in</p><p className="flex items-center gap-2 text-xs font-bold text-primary"><Clock3 className="h-4 w-4"/>Limited slots</p></div>
     <div className="mt-3"><Countdown /></div>
     <div className="mt-5 flex items-end gap-3"><span className="text-sm text-on-dark-muted line-through">₹1,999</span><strong className="font-display text-3xl text-primary">₹0</strong><span className="pb-1 text-xs font-bold uppercase text-on-dark">Today</span></div>
-    <div className="mt-5 grid gap-3"><label className="sr-only" htmlFor="hero-name">Full name</label><input id="hero-name" required name="fullName" minLength={2} maxLength={100} autoComplete="name" placeholder="Full name" className={field}/><label className="sr-only" htmlFor="hero-email">Work email</label><input id="hero-email" required name="email" type="email" maxLength={255} autoComplete="email" placeholder="Work email" className={field}/><label className="sr-only" htmlFor="hero-phone">Phone number</label><input id="hero-phone" required name="phone" type="tel" maxLength={30} autoComplete="tel" placeholder="Phone number" className={field}/><label className="sr-only" htmlFor="hero-platform">Where do you want to list your products?</label><select id="hero-platform" required name="platform" defaultValue="" className={field}><option value="" disabled>Where do you want to list your products?</option>{PLATFORM_OPTIONS.map((option) => <option key={option}>{option}</option>)}</select></div>
+    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      <label className={label}>Name<input required name="fullName" minLength={2} maxLength={100} autoComplete="name" placeholder="Your full name" className={`${field} mt-2`}/></label>
+      <label className={label}>Email<input required name="email" type="email" maxLength={255} autoComplete="email" placeholder="you@email.com" className={`${field} mt-2`}/></label>
+      <label className={label}>WhatsApp Number<input required name="phone" type="tel" maxLength={30} autoComplete="tel" placeholder="+91 98765 43210" className={`${field} mt-2`}/></label>
+      <label className={label}>City<input required name="city" maxLength={120} autoComplete="address-level2" placeholder="Mumbai" className={`${field} mt-2`}/></label>
+      <label className={`${label} sm:col-span-2`}>Where Do You Want to List Your Products?<select required name="platform" defaultValue="" className={`${field} mt-2`}><option value="" disabled>Select a platform</option>{PLATFORM_OPTIONS.map((option) => <option key={option}>{option}</option>)}</select></label>
+    </div>
     {error && <p role="alert" className="mt-3 text-sm text-destructive">{error}</p>}
-    <Button disabled={state === "loading"} type="submit" variant="hero" size="xl" className="mt-5 w-full">{state === "loading" ? "Reserving…" : "Book My Free Spot"}<ArrowRight /></Button>
-    <p className="mt-4 text-center text-xs text-on-dark-muted">Only a few free consultation slots are released each week.</p>
+    <Button disabled={state === "loading"} type="submit" variant="hero" size="xl" className="mt-5 w-full">{state === "loading" ? "Reserving…" : "Get My Free Seat"}<ArrowRight /></Button>
+    <p className="mt-3 text-center text-sm font-semibold text-primary">No card needed · No fees · Free webinar</p>
+    <p className="mt-4 text-center text-xs text-on-dark-muted">By registering you agree to receive session reminders and updates on email and WhatsApp. You can opt out any time.</p>
   </form>;
 }
 
@@ -146,9 +162,9 @@ function Hero() {
          <h1 className="max-w-3xl text-5xl font-semibold leading-[0.98] sm:text-6xl lg:text-7xl">Scale Your D2C Brand. <span className="text-primary">Faster.</span></h1>
          <p className="mt-7 max-w-xl text-lg leading-8 text-on-dark-muted">Get the end-to-end onboarding and growth strategy that gets your brand listed, visible and selling across India's leading marketplaces.</p>
          <p className="mt-4 max-w-xl text-sm leading-6 text-on-dark-muted">Amazon, Flipkart, Blinkit, Zepto and Instamart all play by different rules. Replace guesswork with hands-on, platform-specific support.</p>
-         <div className="mt-9 flex flex-col items-start gap-3 sm:flex-row"><CTA>Register for Free</CTA><Button variant="quiet" size="xl" className="border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" onClick={() => scrollTo("services")}>Explore Services</Button></div>
+         <div className="mt-9 flex flex-col items-start gap-3 sm:flex-row"><CTA>Get My Free Seat</CTA><Button variant="quiet" size="xl" className="border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" onClick={() => scrollTo("services")}>Explore Services</Button></div>
       </div>
-       <div className="mx-auto w-full max-w-[31rem]"><HeroLeadForm /></div>
+       <div className="mx-auto w-full max-w-[31rem]"><RegistrationForm source="contact" formName="hero_registration" /></div>
     </div>
   </section>;
 }
@@ -171,7 +187,7 @@ function Solutions() {
 }
 
 function Services() {
-   return <section id="services" className="py-24 lg:py-32"><div className="section-shell"><SectionHeading eyebrow="Capabilities" title="From First Listing to Marketplace Growth" copy="Focused support across the five areas D2C brands need to launch well, stay healthy and scale across channels."/><div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{services.map(([icon, title, copy], index) => { const Icon = iconMap[icon]; return <article key={title} className="group border border-border bg-card p-7 transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-lg"><span className="text-xs font-bold text-primary">0{index + 1}</span><Icon className="mt-6 h-6 w-6 text-primary"/><h3 className="mt-7 text-lg font-semibold">{title}</h3><p className="mt-3 min-h-12 text-sm leading-6 text-muted-foreground">{copy}</p><a href="#contact" className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-foreground transition-colors group-hover:text-primary">Discuss Your Brand <ChevronRight className="h-4 w-4"/></a></article>; })}</div><div className="mt-12 flex justify-center"><CTA /></div></div></section>;
+   return <section id="services" className="py-24 lg:py-32"><div className="section-shell"><SectionHeading eyebrow="Capabilities" title="From First Listing to Marketplace Growth" copy="Focused support across the five areas D2C brands need to launch well, stay healthy and scale across channels."/><div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{services.map(([icon, title, copy], index) => { const Icon = iconMap[icon]; return <article key={title} className="group border border-border bg-card p-7 transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-lg"><span className="text-xs font-bold text-primary">0{index + 1}</span><Icon className="mt-6 h-6 w-6 text-primary"/><h3 className="mt-7 text-lg font-semibold">{title}</h3><p className="mt-3 min-h-12 text-sm leading-6 text-muted-foreground">{copy}</p><a href="#top" onClick={() => track("cta_click", { label: "service_card" })} className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-foreground transition-colors group-hover:text-primary">Discuss Your Brand <ChevronRight className="h-4 w-4"/></a></article>; })}</div><div className="mt-12 flex flex-col items-center gap-3"><UrgencyBadge>Only 5 free seats left for {WEBINAR_DATE_LABEL}</UrgencyBadge><CTA /></div></div></section>;
 }
 
 function Process() {
@@ -180,11 +196,11 @@ function Process() {
 }
 
 function Results() {
-   return <section id="results" className="bg-surface-dark py-24 text-on-dark lg:py-32"><div className="section-shell"><SectionHeading light eyebrow="Selected brand work" title="Supporting Brands Built for the Big Stage" copy="Complete onboarding assistance and account management for beauty brands later featured on Shark Tank India."/><div className="mt-14 grid max-w-4xl gap-5 md:grid-cols-2">{caseStudies.map((item) => <article key={item.industry} className="border border-on-dark/15 bg-surface-dark-raised p-7"><p className="text-xs font-bold uppercase tracking-[0.15em] text-primary">{item.industry}</p><dl className="mt-8 space-y-6"><div><dt className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-on-dark-muted">Need</dt><dd className="mt-2 text-sm">{item.challenge}</dd></div><div><dt className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-on-dark-muted">Support</dt><dd className="mt-2 text-sm">{item.strategy}</dd></div></dl><p className="mt-8 border-t border-on-dark/15 pt-6 font-display text-2xl font-semibold text-primary">{item.result}</p></article>)}</div><div className="mt-12"><CTA /></div></div></section>;
+   return <section id="results" className="bg-surface-dark py-24 text-on-dark lg:py-32"><div className="section-shell"><SectionHeading light eyebrow="Selected brand work" title="Supporting Brands Built for the Big Stage" copy="Complete onboarding assistance and account management for beauty brands later featured on Shark Tank India."/><div className="mt-14 grid max-w-4xl gap-5 md:grid-cols-2">{caseStudies.map((item) => <article key={item.industry} className="border border-on-dark/15 bg-surface-dark-raised p-7"><p className="text-xs font-bold uppercase tracking-[0.15em] text-primary">{item.industry}</p><dl className="mt-8 space-y-6"><div><dt className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-on-dark-muted">Need</dt><dd className="mt-2 text-sm">{item.challenge}</dd></div><div><dt className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-on-dark-muted">Support</dt><dd className="mt-2 text-sm">{item.strategy}</dd></div></dl><p className="mt-8 border-t border-on-dark/15 pt-6 font-display text-2xl font-semibold text-primary">{item.result}</p></article>)}</div><div className="mt-12 flex flex-col items-center gap-3"><UrgencyBadge>Webinar on {WEBINAR_DATE_LABEL} — seats filling fast</UrgencyBadge><CTA /></div></div></section>;
 }
 
 function About() {
-   return <section id="about" className="py-24 lg:py-32"><div className="section-shell grid items-center gap-12 lg:grid-cols-[.82fr_1.18fr] lg:gap-20"><div><img src={portrait} alt="Bharat Hudadalli" width={1600} height={1067} loading="lazy" className="aspect-[4/5] w-full object-cover object-[58%_center]"/></div><div><SectionHeading eyebrow="Meet your growth architect" title={`Meet ${siteConfig.name}`} /><p className="mt-7 text-lg leading-8 text-muted-foreground">An e-commerce and quick-commerce growth consultant based in Bengaluru, and founder of E-Com Brands Launchpad.</p><blockquote className="my-8 border-l-2 border-primary pl-6 font-display text-2xl font-medium leading-9">“Hands-on, platform-specific experience. Not recycled playbooks.”</blockquote><div className="grid gap-3 sm:grid-cols-2">{["D2C brand onboarding", "Marketplace account health", "Q-commerce strategy", "Direct 1:1 access"].map((x) => <p key={x} className="flex items-center gap-3 text-sm font-semibold"><Check className="h-4 w-4 text-primary"/>{x}</p>)}</div><div className="mt-9"><CTA>Onboard Your Brand</CTA></div></div></div></section>;
+   return <section id="about" className="py-24 lg:py-32"><div className="section-shell grid items-center gap-12 lg:grid-cols-[.82fr_1.18fr] lg:gap-20"><div><img src={portrait} alt="Bharat Hudadalli" width={1600} height={1067} loading="lazy" className="aspect-[4/5] w-full object-cover object-[58%_center]"/></div><div><SectionHeading eyebrow="Meet your growth architect" title={`Meet ${siteConfig.name}`} /><p className="mt-7 text-lg leading-8 text-muted-foreground">An e-commerce and quick-commerce growth consultant based in Bengaluru, and founder of E-Com Brands Launchpad.</p><blockquote className="my-8 border-l-2 border-primary pl-6 font-display text-2xl font-medium leading-9">“Hands-on, platform-specific experience. Not recycled playbooks.”</blockquote><div className="grid gap-3 sm:grid-cols-2">{["D2C brand onboarding", "Marketplace account health", "Q-commerce strategy", "Direct 1:1 access"].map((x) => <p key={x} className="flex items-center gap-3 text-sm font-semibold"><Check className="h-4 w-4 text-primary"/>{x}</p>)}</div><div className="mt-9"><CTA>Reserve My Free Seat</CTA></div></div></div></section>;
 }
 
 function WhyMe() {
@@ -193,39 +209,11 @@ function WhyMe() {
 }
 
 function Testimonials() {
-   return <section id="testimonials" className="py-24 lg:py-32"><div className="section-shell"><SectionHeading eyebrow="Founder and partner feedback" title="What Clients Say" copy="Feedback published on Bharat's original consultancy website."/><div className="mt-14 grid gap-5 lg:grid-cols-3">{testimonials.map((item, i) => <figure key={i} className="border border-border bg-card p-7"><p aria-label="5 stars" className="text-sm tracking-[0.2em] text-primary">★★★★★</p><blockquote className="mt-8 min-h-28 text-base leading-7">“{item.quote}”</blockquote><figcaption className="mt-8 border-t border-border pt-5"><p className="font-semibold">{item.name}</p><p className="mt-1 text-xs text-muted-foreground">{item.role}</p></figcaption></figure>)}</div></div></section>;
-}
-
-type LeadKind = "growth_audit" | "contact";
-function LeadForm({ kind }: { kind: LeadKind }) {
-  const submit = useServerFn(submitLead);
-  const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [error, setError] = useState("");
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); setState("loading"); setError("");
-    const form = new FormData(event.currentTarget);
-    try {
-      await submit({ data: { source: kind, fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: String(form.get("companyName") ?? ""), websiteUrl: String(form.get("websiteUrl") ?? ""), monthlyBudget: String(form.get("monthlyBudget") ?? ""), platform: String(form.get("platform") ?? ""), message: String(form.get("message") ?? ""), ...getUtmParams() } });
-      track("form_submitted", { form: kind }); setState("success");
-    } catch (cause) { setError(cause instanceof Error ? cause.message : "Please check your details and try again."); setState("error"); }
-  };
-  if (state === "success") return <div className="grid min-h-80 place-items-center border border-primary/30 bg-accent/30 p-8 text-center"><div><span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground"><Check /></span><h3 className="mt-5 text-3xl font-semibold">You're In!</h3><p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted-foreground">Thanks for reaching out. Your request has been received. We'll get back to you shortly.</p><Button className="mt-7" variant="hero" size="lg" onClick={() => { track("calendar_click"); scrollTo("contact"); }}>Schedule Your Call <ArrowRight /></Button></div></div>;
-  const input = "h-12 w-full border border-input bg-background px-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15";
-  return <form onSubmit={onSubmit} onFocus={() => track("form_started", { form: kind })} className="grid gap-4 sm:grid-cols-2">
-    <label className="text-xs font-bold uppercase tracking-[0.1em]">Full Name<input required name="fullName" minLength={2} maxLength={100} autoComplete="name" className={`${input} mt-2`} /></label>
-    <label className="text-xs font-bold uppercase tracking-[0.1em]">Work Email<input required name="email" type="email" maxLength={255} autoComplete="email" className={`${input} mt-2`} /></label>
-    <label className="text-xs font-bold uppercase tracking-[0.1em]">Phone<input name="phone" type="tel" maxLength={30} autoComplete="tel" className={`${input} mt-2`} /></label>
-    <label className="text-xs font-bold uppercase tracking-[0.1em]">Company<input name="companyName" maxLength={120} autoComplete="organization" className={`${input} mt-2`} /></label>
-    {kind === "growth_audit" && <><label className="text-xs font-bold uppercase tracking-[0.1em]">Website URL<input name="websiteUrl" type="url" maxLength={500} placeholder="https://" className={`${input} mt-2`} /></label><label className="text-xs font-bold uppercase tracking-[0.1em]">Monthly Marketing Budget<select name="monthlyBudget" className={`${input} mt-2`} defaultValue=""><option value="" disabled>Select a range</option><option>Under ₹1 lakh</option><option>₹1–5 lakh</option><option>₹5–15 lakh</option><option>₹15 lakh+</option><option>Not currently spending</option></select></label></>}
-    <label className="text-xs font-bold uppercase tracking-[0.1em] sm:col-span-2">Where Do You Want to List Your Products?<select required name="platform" defaultValue="" className={`${input} mt-2`}><option value="" disabled>Select a platform</option>{PLATFORM_OPTIONS.map((option) => <option key={option}>{option}</option>)}</select></label>
-    <label className="text-xs font-bold uppercase tracking-[0.1em] sm:col-span-2">{kind === "growth_audit" ? "Biggest Growth Challenge" : "Message"}<textarea required name="message" minLength={10} maxLength={1500} rows={5} className={`${input} mt-2 h-auto py-3`} /></label>
-    {error && <p role="alert" className="text-sm text-destructive sm:col-span-2">{error}</p>}
-    <div className="sm:col-span-2"><Button disabled={state === "loading"} type="submit" variant="hero" size="xl">{state === "loading" ? "Sending…" : kind === "growth_audit" ? "Get My Free Growth Audit" : "Send Inquiry"}<ArrowRight /></Button><p className="mt-3 text-xs text-muted-foreground">Your details are used only to respond to your enquiry.</p></div>
-  </form>;
+   return <section id="testimonials" className="py-24 lg:py-32"><div className="section-shell"><SectionHeading eyebrow="Founder and partner feedback" title="What Clients Say" copy="Feedback published on Bharat's original consultancy website."/><div className="mt-14 grid gap-5 lg:grid-cols-3">{testimonials.map((item, i) => <figure key={i} className="border border-border bg-card p-7"><p aria-label="5 stars" className="text-sm tracking-[0.2em] text-primary">★★★★★</p><blockquote className="mt-8 min-h-28 text-base leading-7">“{item.quote}”</blockquote><figcaption className="mt-8 border-t border-border pt-5"><p className="font-semibold">{item.name}</p><p className="mt-1 text-xs text-muted-foreground">{item.role}</p></figcaption></figure>)}</div><div className="mt-12 flex flex-col items-center gap-3"><UrgencyBadge>Only 5 free seats left</UrgencyBadge><CTA /></div></div></section>;
 }
 
 function LeadMagnet() {
-   return <section id="audit" className="bg-accent/35 py-24 lg:py-32"><div className="section-shell grid gap-12 lg:grid-cols-[.78fr_1.22fr] lg:gap-20"><div><SectionHeading eyebrow="A useful first step" title="Get a Free Marketplace Growth Audit" copy="Identify the biggest onboarding, account-health and channel opportunities holding your brand back."/><div className="mt-8 space-y-3">{["A focused marketplace review", "Priority platform opportunities", "Clear next-step recommendations"].map((x) => <p key={x} className="flex items-center gap-3 text-sm font-semibold"><Check className="h-4 w-4 text-primary"/>{x}</p>)}</div></div><div className="bg-card p-6 shadow-xl sm:p-9"><LeadForm kind="growth_audit"/></div></div></section>;
+   return <section id="audit" className="bg-accent/35 py-24 lg:py-32"><div className="section-shell grid gap-12 lg:grid-cols-[.78fr_1.22fr] lg:gap-20"><div><SectionHeading eyebrow="A useful first step" title="Get a Free Marketplace Growth Audit" copy="Identify the biggest onboarding, account-health and channel opportunities holding your brand back."/><div className="mt-8 space-y-3">{["A focused marketplace review", "Priority platform opportunities", "Clear next-step recommendations"].map((x) => <p key={x} className="flex items-center gap-3 text-sm font-semibold"><Check className="h-4 w-4 text-primary"/>{x}</p>)}</div></div><div><RegistrationForm source="growth_audit" formName="growth_audit" /></div></div></section>;
 }
 
 function FAQ() {
@@ -233,11 +221,11 @@ function FAQ() {
 }
 
 function FinalCTA() {
-   return <section className="dark-grid bg-surface-dark py-24 text-center text-on-dark"><div className="section-shell"><p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Your next growth move</p><h2 className="mx-auto mt-5 max-w-4xl text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">Ready to Get Listed, Visible and Selling?</h2><p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-on-dark-muted">Let's identify what's blocking your marketplace growth and build a practical roadmap to scale.</p><div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"><CTA /><Button variant="quiet" size="xl" className="border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" onClick={() => scrollTo("audit")}>Get a Free Growth Audit</Button></div></div></section>;
+   return <section className="dark-grid bg-surface-dark py-24 text-center text-on-dark"><div className="section-shell"><p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Your next growth move</p><h2 className="mx-auto mt-5 max-w-4xl text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">Ready to Get Listed, Visible and Selling?</h2><p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-on-dark-muted">Join the free {WEBINAR_DATE_LABEL} webinar. Only 5 seats left — reserve yours now.</p><div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"><CTA /><Button variant="quiet" size="xl" className="border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" onClick={() => scrollTo("services")}>Explore Services</Button></div></div></section>;
 }
 
 function Contact() {
-   return <section id="contact" className="py-24 lg:py-32"><div className="section-shell grid gap-12 lg:grid-cols-[.75fr_1.25fr] lg:gap-20"><div><SectionHeading eyebrow="Start a conversation" title="Let's Scale Your Brand" copy="Tell me where you sell today and what's blocking your next stage of marketplace growth."/><div className="mt-9 space-y-4"><a href={siteConfig.linkedin} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-sm"><Linkedin className="h-5 w-5 text-primary"/>Connect on LinkedIn <ExternalLink className="h-3 w-3"/></a><p className="flex items-center gap-3 text-sm"><MapPin className="h-5 w-5 text-primary"/>Bengaluru, India</p></div></div><div className="border border-border bg-card p-6 sm:p-9"><LeadForm kind="contact"/></div></div></section>;
+   return <section id="contact" className="py-24 lg:py-32"><div className="section-shell grid gap-12 lg:grid-cols-[.75fr_1.25fr] lg:gap-20"><div><SectionHeading eyebrow="Start a conversation" title="Let's Scale Your Brand" copy="Tell me where you sell today and what's blocking your next stage of marketplace growth."/><div className="mt-9 space-y-4"><a href={siteConfig.linkedin} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-sm"><Linkedin className="h-5 w-5 text-primary"/>Connect on LinkedIn <ExternalLink className="h-3 w-3"/></a><p className="flex items-center gap-3 text-sm"><MapPin className="h-5 w-5 text-primary"/>Bengaluru, India</p></div></div><div><RegistrationForm source="contact" formName="contact" /></div></div></section>;
 }
 
 function Footer() {
@@ -250,5 +238,5 @@ function LandingPage() {
     const onScroll = () => { const depth = Math.round(((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight) * 100); [25,50,75,90].forEach((mark) => { if (depth >= mark && !marks.has(mark)) { marks.add(mark); track("scroll_depth", { percent: String(mark) }); } }); };
     window.addEventListener("scroll", onScroll, { passive: true }); return () => window.removeEventListener("scroll", onScroll);
   }, []);
-   return <><Navbar/><main><Hero/><TrustBar/><Problems/><Services/><Process/><About/><WhyMe/><Results/><Testimonials/><LeadMagnet/><FAQ/><FinalCTA/><Contact/></main><Footer/><div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-surface-dark p-3 lg:hidden"><Button variant="hero" className="h-12 w-full" onClick={() => { track("cta_click", { label: "mobile_sticky" }); scrollTo("top"); }}>Book My Free Spot <ArrowRight /></Button></div></>;
+   return <><Navbar/><main><Hero/><TrustBar/><Problems/><Services/><Process/><Results/><About/><WhyMe/><Testimonials/><LeadMagnet/><FAQ/><FinalCTA/><Contact/></main><Footer/><div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-surface-dark p-3 lg:hidden"><Button variant="hero" className="h-12 w-full" onClick={() => { track("cta_click", { label: "mobile_sticky" }); scrollTo("top"); }}>Get My Free Seat <ArrowRight /></Button></div></>;
 }

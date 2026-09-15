@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       leads: {
         Row: {
+          city: string | null
           company_name: string | null
           created_at: string
           email: string
@@ -37,6 +38,7 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
+          city?: string | null
           company_name?: string | null
           created_at?: string
           email: string
@@ -58,6 +60,7 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
+          city?: string | null
           company_name?: string | null
           created_at?: string
           email?: string

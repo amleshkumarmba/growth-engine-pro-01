@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 const SHEET_ID = "1NLoxTRP9UmnTBYOFvsAFVZbbYQq2SfBtgYGzAa6EiAI";
-const SHEET_RANGE = "Sheet1!A:Q";
+const SHEET_RANGE = "Sheet1!A:R";
 
 const leadSchema = z.object({
   source: z.enum(["growth_audit", "contact"]),
@@ -14,6 +14,7 @@ const leadSchema = z.object({
   websiteUrl: z.union([z.literal(""), z.string().trim().url().max(500)]).optional(),
   monthlyBudget: z.string().trim().max(80).optional(),
   platform: z.string().trim().max(80).optional(),
+  city: z.string().trim().max(120).optional(),
   message: z.string().trim().min(10).max(1500),
   utmSource: z.string().trim().max(200).optional(),
   utmMedium: z.string().trim().max(200).optional(),
@@ -29,16 +30,22 @@ async function appendToSheet(data: z.infer<typeof leadSchema>) {
   const connectionKey = process.env["GOOGLE_SHEETS_API_KEY"];
   if (!lovableKey || !connectionKey) return;
 
+  const asSheetText = (value: string | undefined) => {
+    const text = value ?? "";
+    // Prevent Google Sheets from interpreting +91... as a formula.
+    return text.startsWith("+") ? `'${text}` : text;
+  };
   const row = [
     new Date().toISOString(),
     data.source,
     data.fullName,
     data.email,
-    data.phone ?? "",
+    asSheetText(data.phone),
     data.companyName ?? "",
     data.websiteUrl ?? "",
     data.monthlyBudget ?? "",
     data.platform ?? "",
+    data.city ?? "",
     data.message,
     data.utmSource ?? "",
     data.utmMedium ?? "",
@@ -84,6 +91,7 @@ export const submitLead = createServerFn({ method: "POST" })
       website_url: data.websiteUrl || null,
       monthly_budget: data.monthlyBudget || null,
       platform: data.platform || null,
+      city: data.city || null,
       message: data.message,
       utm_source: data.utmSource || null,
       utm_medium: data.utmMedium || null,
