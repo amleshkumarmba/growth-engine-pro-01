@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 const SHEET_ID = "1NLoxTRP9UmnTBYOFvsAFVZbbYQq2SfBtgYGzAa6EiAI";
-const SHEET_RANGE = "Sheet1!A:Q";
+const SHEET_RANGE = "Sheet1!A:R";
 
 const leadSchema = z.object({
   source: z.enum(["growth_audit", "contact"]),
