@@ -14,6 +14,7 @@ const leadSchema = z.object({
   websiteUrl: z.union([z.literal(""), z.string().trim().url().max(500)]).optional(),
   monthlyBudget: z.string().trim().max(80).optional(),
   platform: z.string().trim().max(80).optional(),
+  city: z.string().trim().max(120).optional(),
   message: z.string().trim().min(10).max(1500),
   utmSource: z.string().trim().max(200).optional(),
   utmMedium: z.string().trim().max(200).optional(),
