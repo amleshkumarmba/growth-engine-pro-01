@@ -129,6 +129,7 @@ function ThankYouPage() {
         <span className="inline-flex items-center gap-1.5 rounded-md bg-primary/15 px-2 py-0.5 font-bold text-primary"><CalendarDays className="h-4 w-4" />{WEBINAR_DATE_LABEL}</span>{" "}
         is booked. The joining link goes out inside our WhatsApp community — join it now so you don't miss it.
       </p>
+      {leadRef && <p className="mt-4 text-xs font-bold uppercase tracking-[0.12em] text-on-dark-muted">Registration ID: <span className="text-primary">{leadRef}</span></p>}
 
       <div className="mx-auto mt-12 max-w-3xl rounded-2xl border-2 border-primary/60 bg-surface-dark-raised p-7 sm:p-10">
         <p className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-primary"><Users className="h-4 w-4" />Attendees-only group</p>
