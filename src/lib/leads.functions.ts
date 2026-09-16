@@ -268,5 +268,8 @@ export const submitLead = createServerFn({ method: "POST" })
     // Best-effort email alert — a mail failure must not block the lead.
     await sendLeadEmail(data).catch((cause) => console.error("Lead email error:", cause));
 
+    // Best-effort thank-you email to the registrant with the WhatsApp community link.
+    await sendThankYouEmail(data).catch((cause) => console.error("Thank-you email error:", cause));
+
     return { success: true };
   });
