@@ -60,7 +60,7 @@ export const testimonials = [
 ] as const;
 
 export const faqs = [
-  ["When is the free webinar?", "The next live webinar is on 27th September 2026. It is a 90-minute session in Hindi and English, and only a limited number of free seats are available."],
+  ["When is the free webinar?", "The next live webinar is on 27th September 2026. It is a 90-minute session in English only, and it is completely free — but the number of seats is limited."],
   ["Which platforms does Bharat specialize in?", "Amazon, Flipkart, Myntra, Blinkit, Zepto, Swiggy Instamart, BigBasket, Nykaa and Tata Cliq."],
   ["Can you help with both onboarding and ongoing management?", "Yes. Support can cover initial listings and compliance, followed by catalog, inventory, pricing and account-health management."],
   ["Do you offer quick-commerce strategy?", "Yes. The work includes platform-specific positioning, SKU selection and growth planning for fast-delivery channels."],
