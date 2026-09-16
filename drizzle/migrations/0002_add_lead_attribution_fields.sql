@@ -1,0 +1,31 @@
+ALTER TABLE public.leads
+  ADD COLUMN IF NOT EXISTS lead_ref text,
+  ADD COLUMN IF NOT EXISTS event_id text,
+  ADD COLUMN IF NOT EXISTS designation text,
+  ADD COLUMN IF NOT EXISTS state text,
+  ADD COLUMN IF NOT EXISTS country text,
+  ADD COLUMN IF NOT EXISTS device_type text,
+  ADD COLUMN IF NOT EXISTS operating_system text,
+  ADD COLUMN IF NOT EXISTS browser text,
+  ADD COLUMN IF NOT EXISTS screen_resolution text,
+  ADD COLUMN IF NOT EXISTS device_language text,
+  ADD COLUMN IF NOT EXISTS time_zone text,
+  ADD COLUMN IF NOT EXISTS user_agent text,
+  ADD COLUMN IF NOT EXISTS landing_page_url text,
+  ADD COLUMN IF NOT EXISTS first_page_url text,
+  ADD COLUMN IF NOT EXISTS last_page_url text,
+  ADD COLUMN IF NOT EXISTS referrer text,
+  ADD COLUMN IF NOT EXISTS fbclid text,
+  ADD COLUMN IF NOT EXISTS gclid text,
+  ADD COLUMN IF NOT EXISTS wbraid text,
+  ADD COLUMN IF NOT EXISTS gbraid text,
+  ADD COLUMN IF NOT EXISTS msclkid text,
+  ADD COLUMN IF NOT EXISTS first_touch jsonb,
+  ADD COLUMN IF NOT EXISTS last_touch jsonb,
+  ADD COLUMN IF NOT EXISTS meta_attribution jsonb,
+  ADD COLUMN IF NOT EXISTS extra_params jsonb,
+  ADD COLUMN IF NOT EXISTS lead_status text NOT NULL DEFAULT 'New',
+  ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
+
+CREATE UNIQUE INDEX IF NOT EXISTS leads_lead_ref_key ON public.leads (lead_ref);
+CREATE UNIQUE INDEX IF NOT EXISTS leads_event_id_key ON public.leads (event_id);
