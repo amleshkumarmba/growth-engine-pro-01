@@ -247,9 +247,15 @@ function Footer() {
 
 function LandingPage() {
   useEffect(() => {
+    const attribution = captureAttribution();
+    track("attribution_captured", {
+      first_source: attribution?.firstTouch?.source ?? "",
+      last_source: attribution?.lastTouch?.source ?? "",
+      last_campaign: attribution?.lastTouch?.campaign ?? "",
+    });
     const marks = new Set<number>();
     const onScroll = () => { const depth = Math.round(((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight) * 100); [25,50,75,90].forEach((mark) => { if (depth >= mark && !marks.has(mark)) { marks.add(mark); track("scroll_depth", { percent: String(mark) }); } }); };
     window.addEventListener("scroll", onScroll, { passive: true }); return () => window.removeEventListener("scroll", onScroll);
   }, []);
-   return <><Navbar/><main><Hero/><TrustBar/><Problems/><Services/><Process/><Results/><About/><WhyMe/><Testimonials/><LeadMagnet/><FAQ/><FinalCTA/><Contact/></main><Footer/><div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-surface-dark p-3 lg:hidden"><Button variant="hero" className="h-12 w-full" onClick={() => { track("cta_click", { label: "mobile_sticky" }); scrollTo("top"); }}>Get My Free Seat <ArrowRight /></Button></div></>;
+   return <><Navbar/><main><Hero/><TrustBar/><Problems/><Services/><Process/><Results/><About/><WhyMe/><Testimonials/><LeadMagnet/><FAQ/><FinalCTA/><Contact/></main><Footer/><div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-surface-dark p-3 lg:hidden"><Button variant="hero" className="h-12 w-full" onClick={() => { track("cta_click", { label: "mobile_sticky" }); openRegistrationForm(); }}>Get My Free Seat <ArrowRight /></Button></div></>;
 }
