@@ -130,23 +130,24 @@ function Countdown() {
 
 function RegistrationForm({ source = "contact", formName = "registration" }: { source?: "growth_audit" | "contact"; formName?: string }) {
   const submit = useServerFn(submitLead);
-  const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const navigate = useNavigate();
+  const [state, setState] = useState<"idle" | "loading" | "error">("idle");
   const [error, setError] = useState("");
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setState("loading"); setError("");
     const form = new FormData(event.currentTarget);
     try {
       await submit({ data: { source, fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", city: String(form.get("city") ?? ""), platform: String(form.get("platform") ?? ""), message: "Free webinar seat registration", ...getUtmParams() } });
-      track("form_submitted", { form: formName }); setState("success");
+      track("form_submitted", { form: formName });
+      navigate({ to: "/thank-you" });
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Please check your details and try again."); setState("error"); }
   };
-  if (state === "success") return <div className="grid min-h-[25rem] place-items-center rounded-2xl border border-primary/30 bg-surface-dark p-7 text-center"><div><span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground"><Check /></span><h2 className="mt-5 text-3xl font-semibold text-on-dark">You're In!</h2><p className="mt-3 text-sm text-on-dark-muted">Your free seat for the {WEBINAR_DATE_LABEL} webinar is reserved. We'll send the joining link on WhatsApp and email.</p><Button className="mt-7" variant="hero" size="lg" onClick={() => { track("cta_click", { label: "success_register_another" }); scrollTo("top"); }}>Register Another Seat <ArrowRight /></Button></div></div>;
   const field = "h-12 w-full rounded-md border border-on-dark/20 bg-surface-dark px-4 text-sm text-on-dark outline-none placeholder:text-on-dark-muted focus:border-primary focus:ring-2 focus:ring-primary/20";
   const label = "text-xs font-bold uppercase tracking-[0.1em] text-on-dark";
   return <form onSubmit={onSubmit} onFocus={() => track("form_started", { form: formName })} className="rounded-2xl border border-on-dark/15 bg-surface-dark-raised p-5 shadow-2xl sm:p-7">
-    <div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-primary px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-primary-foreground">100% Free · ₹0</span><UrgencyBadge>Only 5 free seats left</UrgencyBadge></div>
-    <h2 className="mt-5 font-display text-2xl font-semibold uppercase leading-tight text-on-dark sm:text-3xl">Reserve Your <span className="text-primary">Free</span> Seat</h2>
-    <p className="mt-2 text-sm text-on-dark-muted">90 minutes live · Hindi & English · {WEBINAR_DATE_LABEL}</p>
+    <div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-primary px-3 py-1.5 text-sm font-extrabold uppercase tracking-[0.08em] text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.45)]">100% Free · ₹0</span><SeatsBadge /></div>
+    <h2 className="mt-5 font-display text-2xl font-semibold uppercase leading-tight text-on-dark sm:text-3xl">Reserve Your <span className="rounded-md bg-primary px-2 text-primary-foreground">Free</span> Seat</h2>
+    <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-on-dark-muted">90 minutes live · English only · <DateHighlight /></p>
     <div className="mt-5 flex items-center justify-between gap-4"><p className="text-sm font-semibold text-on-dark">Registration closes in</p><p className="flex items-center gap-2 text-xs font-bold text-primary"><Clock3 className="h-4 w-4"/>Limited slots</p></div>
     <div className="mt-3"><Countdown /></div>
     <div className="mt-5 flex items-end gap-3"><span className="text-sm text-on-dark-muted line-through">₹1,999</span><strong className="font-display text-3xl text-primary">₹0</strong><span className="pb-1 text-xs font-bold uppercase text-on-dark">Today</span></div>
