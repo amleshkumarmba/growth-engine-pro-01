@@ -74,6 +74,77 @@ async function appendToSheet(data: z.infer<typeof leadSchema>) {
   }
 }
 
+const LEAD_NOTIFICATION_TO = "bharat.hudadalli@gmail.com";
+
+function encodeBase64(text: string) {
+  const bytes = new TextEncoder().encode(text);
+  let binary = "";
+  bytes.forEach((b) => {
+    binary += String.fromCharCode(b);
+  });
+  return btoa(binary);
+}
+
+function mimeHeader(value: string) {
+  return /^[\x00-\x7F]*$/.test(value) ? value : `=?UTF-8?B?${encodeBase64(value)}?=`;
+}
+
+async function sendLeadEmail(data: z.infer<typeof leadSchema>) {
+  const lovableKey = process.env["LOVABLE_API_KEY"];
+  const connectionKey = process.env["GOOGLE_MAIL_API_KEY"];
+  if (!lovableKey || !connectionKey) return;
+
+  const rows: Array<[string, string]> = [
+    ["Name", data.fullName],
+    ["Email", data.email],
+    ["WhatsApp / Phone", data.phone ?? "-"],
+    ["City", data.city ?? "-"],
+    ["Platform interest", data.platform ?? "-"],
+    ["Company", data.companyName ?? "-"],
+    ["Website", data.websiteUrl ?? "-"],
+    ["Monthly budget", data.monthlyBudget ?? "-"],
+    ["Message", data.message],
+    ["Form", data.source],
+    ["UTM source", data.utmSource ?? "-"],
+    ["UTM medium", data.utmMedium ?? "-"],
+    ["UTM campaign", data.utmCampaign ?? "-"],
+    ["UTM ad set", data.utmAdset ?? "-"],
+    ["UTM ad", data.utmAd ?? "-"],
+    ["UTM placement", data.utmPlacement ?? "-"],
+    ["UTM device", data.utmDevice ?? "-"],
+    ["Received at", new Date().toISOString()],
+  ];
+
+  const body = ["New Lead Received", "", ...rows.map(([k, v]) => `${k}: ${v}`)].join("\r\n");
+  const raw = [
+    `To: ${LEAD_NOTIFICATION_TO}`,
+    `Subject: ${mimeHeader("New Lead Received")}`,
+    "MIME-Version: 1.0",
+    'Content-Type: text/plain; charset="UTF-8"',
+    "",
+    body,
+  ].join("\r\n");
+
+  const message = encodeBase64(raw).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+
+  const response = await fetch(
+    "https://connector-gateway.lovable.dev/google_mail/gmail/v1/users/me/messages/send",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": connectionKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ raw: message }),
+    },
+  );
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error(`Lead email send failed [${response.status}]: ${errorBody}`);
+  }
+}
+
 export const submitLead = createServerFn({ method: "POST" })
   .inputValidator((input) => leadSchema.parse(input))
   .handler(async ({ data }) => {
