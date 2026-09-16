@@ -58,16 +58,52 @@ function Countdown() {
   </div>;
 }
 
+const FIRED_EVENTS_KEY = "bscalex_fired_lead_events";
+
 function ThankYouPage() {
+  const [leadRef, setLeadRef] = useState("");
+
   useEffect(() => {
-    track("registration_complete", { page: "thank_you" });
+    captureAttribution();
+
+    let lead: { leadRef?: string; eventId?: string } = {};
+    try {
+      lead = JSON.parse(window.sessionStorage.getItem("bscalex_last_lead") ?? "{}");
+    } catch {
+      lead = {};
+    }
+    setLeadRef(lead.leadRef ?? "");
+
+    // Fire the Meta Lead event once per real registration — refresh, back button
+    // and re-opening the page never send a second event.
+    let fired: string[] = [];
+    try {
+      fired = JSON.parse(window.localStorage.getItem(FIRED_EVENTS_KEY) ?? "[]");
+    } catch {
+      fired = [];
+    }
+    const eventId = lead.eventId;
+    if (!eventId || fired.includes(eventId)) return;
+
+    track("registration_complete", { page: "thank_you", lead_id: lead.leadRef ?? "", event_id: eventId });
     const win = window as Window & { fbq?: (...args: unknown[]) => void };
-    win.fbq?.("track", "Lead", {
-      content_name: "Webinar Registration",
-      content_category: "Lead",
-      value: 0,
-      currency: "INR",
-    });
+    win.fbq?.(
+      "track",
+      "Lead",
+      {
+        content_name: "BScalex Webinar Registration",
+        content_category: "Webinar",
+        value: 0,
+        currency: "INR",
+      },
+      { eventID: eventId },
+    );
+
+    try {
+      window.localStorage.setItem(FIRED_EVENTS_KEY, JSON.stringify([...fired, eventId].slice(-50)));
+    } catch {
+      /* storage unavailable — the event simply is not de-duplicated on this device */
+    }
   }, []);
 
   return <div className="min-h-screen bg-surface-dark text-on-dark">
