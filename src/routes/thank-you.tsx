@@ -62,7 +62,12 @@ function ThankYouPage() {
   useEffect(() => {
     track("registration_complete", { page: "thank_you" });
     const win = window as Window & { fbq?: (...args: unknown[]) => void };
-    win.fbq?.("track", "Lead");
+    win.fbq?.("track", "Lead", {
+      content_name: "Webinar Registration",
+      content_category: "Lead",
+      value: 0,
+      currency: "INR",
+    });
   }, []);
 
   return <div className="min-h-screen bg-surface-dark text-on-dark">
