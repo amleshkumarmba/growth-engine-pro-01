@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight, CalendarDays, Check, MessageCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/site-content";
+import { captureAttribution } from "@/lib/attribution";
 import logo from "@/assets/bscalex-logo.png.asset.json";
 
 export const Route = createFileRoute("/thank-you")({
