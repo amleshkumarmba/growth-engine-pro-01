@@ -127,7 +127,8 @@ function deviceInfo() {
     : /Linux/i.test(ua) ? "Linux" : "Other";
   const browserMatch = /(Edg|OPR|Chrome|Firefox|Safari)\/([\d.]+)/.exec(ua);
   const browserNames: Record<string, string> = { Edg: "Edge", OPR: "Opera", Chrome: "Chrome", Firefox: "Firefox", Safari: "Safari" };
-  const browser = browserMatch ? `${browserNames[browserMatch[1]] ?? browserMatch[1]} ${browserMatch[2]?.split(".")[0] ?? ""}`.trim() : "Other";
+  const engine = browserMatch?.[1] ?? "";
+  const browser = engine ? `${browserNames[engine] ?? engine} ${browserMatch?.[2]?.split(".")[0] ?? ""}`.trim() : "Other";
   let timeZone = "";
   try { timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? ""; } catch { timeZone = ""; }
   return {
