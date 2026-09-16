@@ -16,18 +16,44 @@ export type Database = {
     Tables: {
       leads: {
         Row: {
+          browser: string | null
           city: string | null
           company_name: string | null
+          country: string | null
           created_at: string
+          designation: string | null
+          device_language: string | null
+          device_type: string | null
           email: string
+          event_id: string | null
+          extra_params: Json | null
+          fbclid: string | null
+          first_page_url: string | null
+          first_touch: Json | null
           full_name: string
+          gbraid: string | null
+          gclid: string | null
           id: string
+          landing_page_url: string | null
+          last_page_url: string | null
+          last_touch: Json | null
+          lead_ref: string | null
+          lead_status: string
           message: string | null
+          meta_attribution: Json | null
           monthly_budget: string | null
+          msclkid: string | null
+          operating_system: string | null
           phone: string | null
           platform: string | null
+          referrer: string | null
+          screen_resolution: string | null
           source: string
+          state: string | null
           status: string
+          time_zone: string | null
+          updated_at: string
+          user_agent: string | null
           utm_ad: string | null
           utm_adset: string | null
           utm_campaign: string | null
@@ -35,21 +61,48 @@ export type Database = {
           utm_medium: string | null
           utm_placement: string | null
           utm_source: string | null
+          wbraid: string | null
           website_url: string | null
         }
         Insert: {
+          browser?: string | null
           city?: string | null
           company_name?: string | null
+          country?: string | null
           created_at?: string
+          designation?: string | null
+          device_language?: string | null
+          device_type?: string | null
           email: string
+          event_id?: string | null
+          extra_params?: Json | null
+          fbclid?: string | null
+          first_page_url?: string | null
+          first_touch?: Json | null
           full_name: string
+          gbraid?: string | null
+          gclid?: string | null
           id?: string
+          landing_page_url?: string | null
+          last_page_url?: string | null
+          last_touch?: Json | null
+          lead_ref?: string | null
+          lead_status?: string
           message?: string | null
+          meta_attribution?: Json | null
           monthly_budget?: string | null
+          msclkid?: string | null
+          operating_system?: string | null
           phone?: string | null
           platform?: string | null
+          referrer?: string | null
+          screen_resolution?: string | null
           source: string
+          state?: string | null
           status?: string
+          time_zone?: string | null
+          updated_at?: string
+          user_agent?: string | null
           utm_ad?: string | null
           utm_adset?: string | null
           utm_campaign?: string | null
@@ -57,21 +110,48 @@ export type Database = {
           utm_medium?: string | null
           utm_placement?: string | null
           utm_source?: string | null
+          wbraid?: string | null
           website_url?: string | null
         }
         Update: {
+          browser?: string | null
           city?: string | null
           company_name?: string | null
+          country?: string | null
           created_at?: string
+          designation?: string | null
+          device_language?: string | null
+          device_type?: string | null
           email?: string
+          event_id?: string | null
+          extra_params?: Json | null
+          fbclid?: string | null
+          first_page_url?: string | null
+          first_touch?: Json | null
           full_name?: string
+          gbraid?: string | null
+          gclid?: string | null
           id?: string
+          landing_page_url?: string | null
+          last_page_url?: string | null
+          last_touch?: Json | null
+          lead_ref?: string | null
+          lead_status?: string
           message?: string | null
+          meta_attribution?: Json | null
           monthly_budget?: string | null
+          msclkid?: string | null
+          operating_system?: string | null
           phone?: string | null
           platform?: string | null
+          referrer?: string | null
+          screen_resolution?: string | null
           source?: string
+          state?: string | null
           status?: string
+          time_zone?: string | null
+          updated_at?: string
+          user_agent?: string | null
           utm_ad?: string | null
           utm_adset?: string | null
           utm_campaign?: string | null
@@ -79,6 +159,7 @@ export type Database = {
           utm_medium?: string | null
           utm_placement?: string | null
           utm_source?: string | null
+          wbraid?: string | null
           website_url?: string | null
         }
         Relationships: []

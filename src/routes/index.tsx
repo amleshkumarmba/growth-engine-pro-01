@@ -12,6 +12,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { submitLead } from "@/lib/leads.functions";
 import { caseStudies, faqs, pillars, problems, services, siteConfig, testimonials } from "@/lib/site-content";
 import { useSeatsLeft } from "@/lib/seats";
+import { captureAttribution, getAttributionPayload } from "@/lib/attribution";
 import portrait from "@/assets/bharat-hudadalli.jpg";
 import logo from "@/assets/bscalex-logo.png.asset.json";
 
@@ -49,22 +50,21 @@ const PLATFORM_OPTIONS = ["Zepto", "Instamart", "Blinkit", "Flipkart Minutes", "
 const WEBINAR_DATE = new Date("2026-09-27T23:59:59+05:30");
 const WEBINAR_DATE_LABEL = "27th September 2026";
 
-function getUtmParams() {
-  if (typeof window === "undefined") return {};
-  const params = new URLSearchParams(window.location.search);
-  const pick = (key: string) => params.get(key)?.slice(0, 200) ?? "";
-  return {
-    utmSource: pick("utm_source"), utmMedium: pick("utm_medium"), utmCampaign: pick("utm_campaign"),
-    utmAdset: pick("utm_adset"), utmAd: pick("utm_ad"), utmPlacement: pick("utm_placement"), utmDevice: pick("utm_device"),
-  };
-}
-
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+/** Every CTA opens the registration form and puts the cursor in the first field. */
+function openRegistrationForm() {
+  scrollTo("register");
+  window.setTimeout(() => {
+    const input = document.querySelector<HTMLInputElement>("#register input[name='fullName']");
+    input?.focus({ preventScroll: true });
+  }, 600);
+}
+
 function CTA({ children = "Get My Free Seat", compact = false }: { children?: ReactNode; compact?: boolean }) {
-  return <Button variant="hero" size={compact ? "default" : "xl"} onClick={() => { track("cta_click", { label: String(children) }); scrollTo("top"); }}>{children}<ArrowRight /></Button>;
+  return <Button variant="hero" size={compact ? "default" : "xl"} onClick={() => { track("cta_click", { label: String(children) }); openRegistrationForm(); }}>{children}<ArrowRight /></Button>;
 }
 
 function UrgencyBadge({ children }: { children: ReactNode }) {
@@ -137,8 +137,10 @@ function RegistrationForm({ source = "contact", formName = "registration" }: { s
     event.preventDefault(); setState("loading"); setError("");
     const form = new FormData(event.currentTarget);
     try {
-      await submit({ data: { source, fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", city: String(form.get("city") ?? ""), platform: String(form.get("platform") ?? ""), message: "Free webinar seat registration", ...getUtmParams() } });
-      track("form_submitted", { form: formName });
+      const result = await submit({ data: { source, formName, fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", city: String(form.get("city") ?? ""), platform: String(form.get("platform") ?? ""), message: "Free webinar seat registration", attribution: getAttributionPayload() } });
+      // Handed to the thank-you page so the Meta Lead event fires once per real registration.
+      window.sessionStorage.setItem("bscalex_last_lead", JSON.stringify({ leadRef: result.leadRef, eventId: result.eventId, form: formName }));
+      track("form_submitted", { form: formName, lead_id: result.leadRef, event_id: result.eventId });
       navigate({ to: "/thank-you" });
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Please check your details and try again."); setState("error"); }
   };
@@ -175,7 +177,7 @@ function Hero() {
          <p className="mt-4 max-w-xl text-sm leading-6 text-on-dark-muted">Amazon, Flipkart, Blinkit, Zepto and Instamart all play by different rules. Replace guesswork with hands-on, platform-specific support.</p>
          <div className="mt-9 flex flex-col items-start gap-3 sm:flex-row"><CTA>Get My Free Seat</CTA><Button variant="quiet" size="xl" className="border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" onClick={() => scrollTo("services")}>Explore Services</Button></div>
       </div>
-       <div className="mx-auto w-full max-w-[31rem]"><RegistrationForm source="contact" formName="hero_registration" /></div>
+       <div id="register" className="mx-auto w-full max-w-[31rem] scroll-mt-24"><RegistrationForm source="contact" formName="hero_registration" /></div>
     </div>
   </section>;
 }
@@ -245,9 +247,15 @@ function Footer() {
 
 function LandingPage() {
   useEffect(() => {
+    const attribution = captureAttribution();
+    track("attribution_captured", {
+      first_source: attribution?.firstTouch?.source ?? "",
+      last_source: attribution?.lastTouch?.source ?? "",
+      last_campaign: attribution?.lastTouch?.campaign ?? "",
+    });
     const marks = new Set<number>();
     const onScroll = () => { const depth = Math.round(((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight) * 100); [25,50,75,90].forEach((mark) => { if (depth >= mark && !marks.has(mark)) { marks.add(mark); track("scroll_depth", { percent: String(mark) }); } }); };
     window.addEventListener("scroll", onScroll, { passive: true }); return () => window.removeEventListener("scroll", onScroll);
   }, []);
-   return <><Navbar/><main><Hero/><TrustBar/><Problems/><Services/><Process/><Results/><About/><WhyMe/><Testimonials/><LeadMagnet/><FAQ/><FinalCTA/><Contact/></main><Footer/><div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-surface-dark p-3 lg:hidden"><Button variant="hero" className="h-12 w-full" onClick={() => { track("cta_click", { label: "mobile_sticky" }); scrollTo("top"); }}>Get My Free Seat <ArrowRight /></Button></div></>;
+   return <><Navbar/><main><Hero/><TrustBar/><Problems/><Services/><Process/><Results/><About/><WhyMe/><Testimonials/><LeadMagnet/><FAQ/><FinalCTA/><Contact/></main><Footer/><div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-surface-dark p-3 lg:hidden"><Button variant="hero" className="h-12 w-full" onClick={() => { track("cta_click", { label: "mobile_sticky" }); openRegistrationForm(); }}>Get My Free Seat <ArrowRight /></Button></div></>;
 }

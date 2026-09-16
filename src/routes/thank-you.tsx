@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight, CalendarDays, Check, MessageCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/site-content";
+import { captureAttribution } from "@/lib/attribution";
 import logo from "@/assets/bscalex-logo.png.asset.json";
 
 export const Route = createFileRoute("/thank-you")({
@@ -58,16 +59,52 @@ function Countdown() {
   </div>;
 }
 
+const FIRED_EVENTS_KEY = "bscalex_fired_lead_events";
+
 function ThankYouPage() {
+  const [leadRef, setLeadRef] = useState("");
+
   useEffect(() => {
-    track("registration_complete", { page: "thank_you" });
+    captureAttribution();
+
+    let lead: { leadRef?: string; eventId?: string } = {};
+    try {
+      lead = JSON.parse(window.sessionStorage.getItem("bscalex_last_lead") ?? "{}");
+    } catch {
+      lead = {};
+    }
+    setLeadRef(lead.leadRef ?? "");
+
+    // Fire the Meta Lead event once per real registration — refresh, back button
+    // and re-opening the page never send a second event.
+    let fired: string[] = [];
+    try {
+      fired = JSON.parse(window.localStorage.getItem(FIRED_EVENTS_KEY) ?? "[]");
+    } catch {
+      fired = [];
+    }
+    const eventId = lead.eventId;
+    if (!eventId || fired.includes(eventId)) return;
+
+    track("registration_complete", { page: "thank_you", lead_id: lead.leadRef ?? "", event_id: eventId });
     const win = window as Window & { fbq?: (...args: unknown[]) => void };
-    win.fbq?.("track", "Lead", {
-      content_name: "Webinar Registration",
-      content_category: "Lead",
-      value: 0,
-      currency: "INR",
-    });
+    win.fbq?.(
+      "track",
+      "Lead",
+      {
+        content_name: "BScalex Webinar Registration",
+        content_category: "Webinar",
+        value: 0,
+        currency: "INR",
+      },
+      { eventID: eventId },
+    );
+
+    try {
+      window.localStorage.setItem(FIRED_EVENTS_KEY, JSON.stringify([...fired, eventId].slice(-50)));
+    } catch {
+      /* storage unavailable — the event simply is not de-duplicated on this device */
+    }
   }, []);
 
   return <div className="min-h-screen bg-surface-dark text-on-dark">
@@ -92,6 +129,7 @@ function ThankYouPage() {
         <span className="inline-flex items-center gap-1.5 rounded-md bg-primary/15 px-2 py-0.5 font-bold text-primary"><CalendarDays className="h-4 w-4" />{WEBINAR_DATE_LABEL}</span>{" "}
         is booked. The joining link goes out inside our WhatsApp community — join it now so you don't miss it.
       </p>
+      {leadRef && <p className="mt-4 text-xs font-bold uppercase tracking-[0.12em] text-on-dark-muted">Registration ID: <span className="text-primary">{leadRef}</span></p>}
 
       <div className="mx-auto mt-12 max-w-3xl rounded-2xl border-2 border-primary/60 bg-surface-dark-raised p-7 sm:p-10">
         <p className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-primary"><Users className="h-4 w-4" />Attendees-only group</p>
