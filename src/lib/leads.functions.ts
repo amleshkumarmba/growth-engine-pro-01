@@ -177,5 +177,8 @@ export const submitLead = createServerFn({ method: "POST" })
     // Best-effort sheet sync — a sheet failure must not block the lead.
     await appendToSheet(data).catch((cause) => console.error("Google Sheets sync error:", cause));
 
+    // Best-effort email alert — a mail failure must not block the lead.
+    await sendLeadEmail(data).catch((cause) => console.error("Lead email error:", cause));
+
     return { success: true };
   });
