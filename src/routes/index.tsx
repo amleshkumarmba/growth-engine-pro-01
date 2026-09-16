@@ -70,6 +70,15 @@ function UrgencyBadge({ children }: { children: ReactNode }) {
   return <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.08em] text-primary"><span className="h-2 w-2 animate-pulse rounded-full bg-primary" />{children}</span>;
 }
 
+function SeatsBadge({ withDate = false }: { withDate?: boolean }) {
+  const seats = useSeatsLeft();
+  return <UrgencyBadge>Only {seats} free seats left{withDate ? ` for ${WEBINAR_DATE_LABEL}` : ""}</UrgencyBadge>;
+}
+
+function DateHighlight() {
+  return <span className="inline-flex items-center gap-2 rounded-md bg-primary/15 px-2 py-0.5 font-bold text-primary"><CalendarDays className="h-4 w-4" />{WEBINAR_DATE_LABEL}</span>;
+}
+
 function SectionHeading({ eyebrow, title, copy, light = false }: { eyebrow: string; title: string; copy?: string; light?: boolean }) {
   return <div className="reveal max-w-3xl">
     <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-primary">{eyebrow}</p>
