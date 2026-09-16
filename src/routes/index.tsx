@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import {
-  Activity, ArrowRight, BarChart3, Check, ChevronRight, Clock3,
+  Activity, ArrowRight, BarChart3, CalendarDays, Check, ChevronRight, Clock3,
   Compass, ExternalLink, Gauge, Linkedin, LineChart, Mail, MapPin, Menu,
   MessageCircle, MousePointer2, MousePointerClick, Phone, Route as RouteIcon,
   Search, SearchX, Send, Sparkles, Target, TrendingDown, Unplug, Users, X,
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { submitLead } from "@/lib/leads.functions";
 import { caseStudies, faqs, pillars, problems, services, siteConfig, testimonials } from "@/lib/site-content";
+import { useSeatsLeft } from "@/lib/seats";
 import portrait from "@/assets/bharat-hudadalli.jpg";
 import logo from "@/assets/bscalex-logo.png.asset.json";
 
@@ -70,6 +71,15 @@ function UrgencyBadge({ children }: { children: ReactNode }) {
   return <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.08em] text-primary"><span className="h-2 w-2 animate-pulse rounded-full bg-primary" />{children}</span>;
 }
 
+function SeatsBadge({ withDate = false }: { withDate?: boolean }) {
+  const seats = useSeatsLeft();
+  return <UrgencyBadge>Only {seats} free seats left{withDate ? ` for ${WEBINAR_DATE_LABEL}` : ""}</UrgencyBadge>;
+}
+
+function DateHighlight() {
+  return <span className="inline-flex items-center gap-2 rounded-md bg-primary/15 px-2 py-0.5 font-bold text-primary"><CalendarDays className="h-4 w-4" />{WEBINAR_DATE_LABEL}</span>;
+}
+
 function SectionHeading({ eyebrow, title, copy, light = false }: { eyebrow: string; title: string; copy?: string; light?: boolean }) {
   return <div className="reveal max-w-3xl">
     <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-primary">{eyebrow}</p>
@@ -120,23 +130,24 @@ function Countdown() {
 
 function RegistrationForm({ source = "contact", formName = "registration" }: { source?: "growth_audit" | "contact"; formName?: string }) {
   const submit = useServerFn(submitLead);
-  const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const navigate = useNavigate();
+  const [state, setState] = useState<"idle" | "loading" | "error">("idle");
   const [error, setError] = useState("");
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setState("loading"); setError("");
     const form = new FormData(event.currentTarget);
     try {
       await submit({ data: { source, fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", city: String(form.get("city") ?? ""), platform: String(form.get("platform") ?? ""), message: "Free webinar seat registration", ...getUtmParams() } });
-      track("form_submitted", { form: formName }); setState("success");
+      track("form_submitted", { form: formName });
+      navigate({ to: "/thank-you" });
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Please check your details and try again."); setState("error"); }
   };
-  if (state === "success") return <div className="grid min-h-[25rem] place-items-center rounded-2xl border border-primary/30 bg-surface-dark p-7 text-center"><div><span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground"><Check /></span><h2 className="mt-5 text-3xl font-semibold text-on-dark">You're In!</h2><p className="mt-3 text-sm text-on-dark-muted">Your free seat for the {WEBINAR_DATE_LABEL} webinar is reserved. We'll send the joining link on WhatsApp and email.</p><Button className="mt-7" variant="hero" size="lg" onClick={() => { track("cta_click", { label: "success_register_another" }); scrollTo("top"); }}>Register Another Seat <ArrowRight /></Button></div></div>;
   const field = "h-12 w-full rounded-md border border-on-dark/20 bg-surface-dark px-4 text-sm text-on-dark outline-none placeholder:text-on-dark-muted focus:border-primary focus:ring-2 focus:ring-primary/20";
   const label = "text-xs font-bold uppercase tracking-[0.1em] text-on-dark";
   return <form onSubmit={onSubmit} onFocus={() => track("form_started", { form: formName })} className="rounded-2xl border border-on-dark/15 bg-surface-dark-raised p-5 shadow-2xl sm:p-7">
-    <div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-primary px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-primary-foreground">100% Free · ₹0</span><UrgencyBadge>Only 5 free seats left</UrgencyBadge></div>
-    <h2 className="mt-5 font-display text-2xl font-semibold uppercase leading-tight text-on-dark sm:text-3xl">Reserve Your <span className="text-primary">Free</span> Seat</h2>
-    <p className="mt-2 text-sm text-on-dark-muted">90 minutes live · Hindi & English · {WEBINAR_DATE_LABEL}</p>
+    <div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-primary px-3 py-1.5 text-sm font-extrabold uppercase tracking-[0.08em] text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.45)]">100% Free · ₹0</span><SeatsBadge /></div>
+    <h2 className="mt-5 font-display text-2xl font-semibold uppercase leading-tight text-on-dark sm:text-3xl">Reserve Your <span className="rounded-md bg-primary px-2 text-primary-foreground">Free</span> Seat</h2>
+    <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-on-dark-muted">90 minutes live · English only · <DateHighlight /></p>
     <div className="mt-5 flex items-center justify-between gap-4"><p className="text-sm font-semibold text-on-dark">Registration closes in</p><p className="flex items-center gap-2 text-xs font-bold text-primary"><Clock3 className="h-4 w-4"/>Limited slots</p></div>
     <div className="mt-3"><Countdown /></div>
     <div className="mt-5 flex items-end gap-3"><span className="text-sm text-on-dark-muted line-through">₹1,999</span><strong className="font-display text-3xl text-primary">₹0</strong><span className="pb-1 text-xs font-bold uppercase text-on-dark">Today</span></div>
@@ -187,7 +198,7 @@ function Solutions() {
 }
 
 function Services() {
-   return <section id="services" className="py-24 lg:py-32"><div className="section-shell"><SectionHeading eyebrow="Capabilities" title="From First Listing to Marketplace Growth" copy="Focused support across the five areas D2C brands need to launch well, stay healthy and scale across channels."/><div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{services.map(([icon, title, copy], index) => { const Icon = iconMap[icon]; return <article key={title} className="group border border-border bg-card p-7 transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-lg"><span className="text-xs font-bold text-primary">0{index + 1}</span><Icon className="mt-6 h-6 w-6 text-primary"/><h3 className="mt-7 text-lg font-semibold">{title}</h3><p className="mt-3 min-h-12 text-sm leading-6 text-muted-foreground">{copy}</p><a href="#top" onClick={() => track("cta_click", { label: "service_card" })} className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-foreground transition-colors group-hover:text-primary">Discuss Your Brand <ChevronRight className="h-4 w-4"/></a></article>; })}</div><div className="mt-12 flex flex-col items-center gap-3"><UrgencyBadge>Only 5 free seats left for {WEBINAR_DATE_LABEL}</UrgencyBadge><CTA /></div></div></section>;
+   return <section id="services" className="py-24 lg:py-32"><div className="section-shell"><SectionHeading eyebrow="Capabilities" title="From First Listing to Marketplace Growth" copy="Focused support across the five areas D2C brands need to launch well, stay healthy and scale across channels."/><div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{services.map(([icon, title, copy], index) => { const Icon = iconMap[icon]; return <article key={title} className="group border border-border bg-card p-7 transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-lg"><span className="text-xs font-bold text-primary">0{index + 1}</span><Icon className="mt-6 h-6 w-6 text-primary"/><h3 className="mt-7 text-lg font-semibold">{title}</h3><p className="mt-3 min-h-12 text-sm leading-6 text-muted-foreground">{copy}</p><a href="#top" onClick={() => track("cta_click", { label: "service_card" })} className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-foreground transition-colors group-hover:text-primary">Discuss Your Brand <ChevronRight className="h-4 w-4"/></a></article>; })}</div><div className="mt-12 flex flex-col items-center gap-3"><SeatsBadge withDate /><CTA /></div></div></section>;
 }
 
 function Process() {
@@ -196,7 +207,7 @@ function Process() {
 }
 
 function Results() {
-   return <section id="results" className="bg-surface-dark py-24 text-on-dark lg:py-32"><div className="section-shell"><SectionHeading light eyebrow="Selected brand work" title="Supporting Brands Built for the Big Stage" copy="Complete onboarding assistance and account management for beauty brands later featured on Shark Tank India."/><div className="mt-14 grid max-w-4xl gap-5 md:grid-cols-2">{caseStudies.map((item) => <article key={item.industry} className="border border-on-dark/15 bg-surface-dark-raised p-7"><p className="text-xs font-bold uppercase tracking-[0.15em] text-primary">{item.industry}</p><dl className="mt-8 space-y-6"><div><dt className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-on-dark-muted">Need</dt><dd className="mt-2 text-sm">{item.challenge}</dd></div><div><dt className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-on-dark-muted">Support</dt><dd className="mt-2 text-sm">{item.strategy}</dd></div></dl><p className="mt-8 border-t border-on-dark/15 pt-6 font-display text-2xl font-semibold text-primary">{item.result}</p></article>)}</div><div className="mt-12 flex flex-col items-center gap-3"><UrgencyBadge>Webinar on {WEBINAR_DATE_LABEL} — seats filling fast</UrgencyBadge><CTA /></div></div></section>;
+   return <section id="results" className="bg-surface-dark py-24 text-on-dark lg:py-32"><div className="section-shell"><SectionHeading light eyebrow="Selected brand work" title="Supporting Brands Built for the Big Stage" copy="Complete onboarding assistance and account management for beauty brands later featured on Shark Tank India."/><div className="mt-14 grid max-w-4xl gap-5 md:grid-cols-2">{caseStudies.map((item) => <article key={item.industry} className="border border-on-dark/15 bg-surface-dark-raised p-7"><p className="text-xs font-bold uppercase tracking-[0.15em] text-primary">{item.industry}</p><dl className="mt-8 space-y-6"><div><dt className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-on-dark-muted">Need</dt><dd className="mt-2 text-sm">{item.challenge}</dd></div><div><dt className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-on-dark-muted">Support</dt><dd className="mt-2 text-sm">{item.strategy}</dd></div></dl><p className="mt-8 border-t border-on-dark/15 pt-6 font-display text-2xl font-semibold text-primary">{item.result}</p></article>)}</div><div className="mt-12 flex flex-col items-center gap-3"><SeatsBadge withDate /><CTA /></div></div></section>;
 }
 
 function About() {
@@ -209,7 +220,7 @@ function WhyMe() {
 }
 
 function Testimonials() {
-   return <section id="testimonials" className="py-24 lg:py-32"><div className="section-shell"><SectionHeading eyebrow="Founder and partner feedback" title="What Clients Say" copy="Feedback published on Bharat's original consultancy website."/><div className="mt-14 grid gap-5 lg:grid-cols-3">{testimonials.map((item, i) => <figure key={i} className="border border-border bg-card p-7"><p aria-label="5 stars" className="text-sm tracking-[0.2em] text-primary">★★★★★</p><blockquote className="mt-8 min-h-28 text-base leading-7">“{item.quote}”</blockquote><figcaption className="mt-8 border-t border-border pt-5"><p className="font-semibold">{item.name}</p><p className="mt-1 text-xs text-muted-foreground">{item.role}</p></figcaption></figure>)}</div><div className="mt-12 flex flex-col items-center gap-3"><UrgencyBadge>Only 5 free seats left</UrgencyBadge><CTA /></div></div></section>;
+   return <section id="testimonials" className="py-24 lg:py-32"><div className="section-shell"><SectionHeading eyebrow="Founder and partner feedback" title="What Clients Say" copy="Feedback published on Bharat's original consultancy website."/><div className="mt-14 grid gap-5 lg:grid-cols-3">{testimonials.map((item, i) => <figure key={i} className="border border-border bg-card p-7"><p aria-label="5 stars" className="text-sm tracking-[0.2em] text-primary">★★★★★</p><blockquote className="mt-8 min-h-28 text-base leading-7">“{item.quote}”</blockquote><figcaption className="mt-8 border-t border-border pt-5"><p className="font-semibold">{item.name}</p><p className="mt-1 text-xs text-muted-foreground">{item.role}</p></figcaption></figure>)}</div><div className="mt-12 flex flex-col items-center gap-3"><SeatsBadge /><CTA /></div></div></section>;
 }
 
 function LeadMagnet() {
@@ -221,7 +232,7 @@ function FAQ() {
 }
 
 function FinalCTA() {
-   return <section className="dark-grid bg-surface-dark py-24 text-center text-on-dark"><div className="section-shell"><p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Your next growth move</p><h2 className="mx-auto mt-5 max-w-4xl text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">Ready to Get Listed, Visible and Selling?</h2><p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-on-dark-muted">Join the free {WEBINAR_DATE_LABEL} webinar. Only 5 seats left — reserve yours now.</p><div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"><CTA /><Button variant="quiet" size="xl" className="border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" onClick={() => scrollTo("services")}>Explore Services</Button></div></div></section>;
+   return <section className="dark-grid bg-surface-dark py-24 text-center text-on-dark"><div className="section-shell"><p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Your next growth move</p><h2 className="mx-auto mt-5 max-w-4xl text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">Ready to Get Listed, Visible and Selling?</h2><p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-on-dark-muted">Join the <strong className="text-primary">100% free</strong> webinar on <DateHighlight />. Seats are limited — reserve yours now.</p><div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"><CTA /><Button variant="quiet" size="xl" className="border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" onClick={() => scrollTo("services")}>Explore Services</Button></div></div></section>;
 }
 
 function Contact() {
