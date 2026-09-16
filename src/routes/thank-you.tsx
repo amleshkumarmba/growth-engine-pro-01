@@ -23,7 +23,7 @@ export const Route = createFileRoute("/thank-you")({
 
 const WEBINAR_DATE = new Date("2026-09-27T23:59:59+05:30");
 const WEBINAR_DATE_LABEL = "27th September 2026";
-const WHATSAPP_COMMUNITY_URL = "https://chat.whatsapp.com/LmnPCYE8inYKhw1GjfErWg?s=cl&p=a&mlu=0&ilr=4";
+const WHATSAPP_COMMUNITY_URL = "https://chat.whatsapp.com/FkuBkYpKFZO2MmzMayll8E";
 
 function track(event: string, details: Record<string, string> = {}) {
   if (typeof window === "undefined") return;
