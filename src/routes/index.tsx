@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import {
-  Activity, ArrowRight, BarChart3, Check, ChevronRight, Clock3,
+  Activity, ArrowRight, BarChart3, CalendarDays, Check, ChevronRight, Clock3,
   Compass, ExternalLink, Gauge, Linkedin, LineChart, Mail, MapPin, Menu,
   MessageCircle, MousePointer2, MousePointerClick, Phone, Route as RouteIcon,
   Search, SearchX, Send, Sparkles, Target, TrendingDown, Unplug, Users, X,
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { submitLead } from "@/lib/leads.functions";
 import { caseStudies, faqs, pillars, problems, services, siteConfig, testimonials } from "@/lib/site-content";
+import { useSeatsLeft } from "@/lib/seats";
 import portrait from "@/assets/bharat-hudadalli.jpg";
 import logo from "@/assets/bscalex-logo.png.asset.json";
 
