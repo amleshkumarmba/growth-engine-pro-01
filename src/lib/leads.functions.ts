@@ -412,9 +412,9 @@ export const submitLead = createServerFn({ method: "POST" })
         continue;
       }
       console.error("Lead insert failed:", error);
-      throw new Error("Your request could not be submitted. Please try again.");
+      throw new Error("DBG insert: " + JSON.stringify(error));
     }
-    if (!inserted) throw new Error("Your request could not be submitted. Please try again.");
+    if (!inserted) throw new Error("DBG not inserted");
 
     const record: LeadRecord = { ...data, leadRef, eventId, createdAt: createdAt.toISOString() };
 
