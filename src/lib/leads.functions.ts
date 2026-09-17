@@ -364,7 +364,7 @@ export const submitLead = createServerFn({ method: "POST" })
 
     let leadRef = leadRefFor((count ?? 0) + 1, createdAt);
     let inserted = false;
-    for (let attempt = 0; attempt < 5 && !inserted; attempt += 1) {
+    for (let attempt = 0; attempt < 25 && !inserted; attempt += 1) {
       const { error } = await client.from("leads").insert({
         source: data.source,
         // Required explicitly: the insert policy checks status, and relying on the
@@ -422,9 +422,9 @@ export const submitLead = createServerFn({ method: "POST" })
         continue;
       }
       console.error("Lead insert failed:", error);
-      throw new Error("DBG insert: " + JSON.stringify(error));
+      throw new Error("Your request could not be submitted. Please try again.");
     }
-    if (!inserted) throw new Error("DBG not inserted");
+    if (!inserted) throw new Error("Your request could not be submitted. Please try again.");
 
     const record: LeadRecord = { ...data, leadRef, eventId, createdAt: createdAt.toISOString() };
 
