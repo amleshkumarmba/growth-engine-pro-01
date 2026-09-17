@@ -357,6 +357,9 @@ export const submitLead = createServerFn({ method: "POST" })
     for (let attempt = 0; attempt < 5 && !inserted; attempt += 1) {
       const { error } = await client.from("leads").insert({
         source: data.source,
+        // Required explicitly: the insert policy checks status, and relying on the
+        // column default fails the row-level security check.
+        status: "new",
         full_name: data.fullName,
         email: data.email,
         phone: data.phone || null,
