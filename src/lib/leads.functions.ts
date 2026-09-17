@@ -88,7 +88,7 @@ const leadSchema = z.object({
   formName: z.string().trim().max(80).optional(),
   fullName: z.string().trim().min(2).max(100),
   email: z.string().trim().email().max(255),
-  phone: z.string().trim().max(30).optional(),
+  phone: z.string().trim().regex(/^\d{10}$/, "Enter a valid 10-digit mobile number").optional(),
   companyName: z.string().trim().max(120).optional(),
   designation: z.string().trim().max(120).optional(),
   websiteUrl: z.union([z.literal(""), z.string().trim().url().max(500)]).optional(),

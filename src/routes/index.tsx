@@ -156,7 +156,7 @@ function RegistrationForm({ source = "contact", formName = "registration" }: { s
     <div className="mt-5 grid gap-3 sm:grid-cols-2">
       <label className={label}>Name<input required name="fullName" minLength={2} maxLength={100} autoComplete="name" placeholder="Your full name" className={`${field} mt-2`}/></label>
       <label className={label}>Email<input required name="email" type="email" maxLength={255} autoComplete="email" placeholder="you@email.com" className={`${field} mt-2`}/></label>
-      <label className={label}>WhatsApp Number<input required name="phone" type="tel" maxLength={30} autoComplete="tel" placeholder="+91 98765 43210" className={`${field} mt-2`}/></label>
+      <label className={label}>WhatsApp Number<input required name="phone" type="tel" inputMode="numeric" pattern="[6-9][0-9]{9}" minLength={10} maxLength={10} autoComplete="tel" placeholder="9876543210" title="Enter a 10-digit mobile number" onInput={(event) => { const input = event.currentTarget; input.value = input.value.replace(/\D/g, "").slice(0, 10); }} className={`${field} mt-2`}/><span className="mt-1 block text-[0.65rem] font-medium normal-case tracking-normal text-on-dark-muted">10-digit mobile number, without +91</span></label>
       <label className={label}>City<input required name="city" maxLength={120} autoComplete="address-level2" placeholder="Mumbai" className={`${field} mt-2`}/></label>
       <label className={`${label} sm:col-span-2`}>Where Do You Want to List Your Products?<select required name="platform" defaultValue="" className={`${field} mt-2`}><option value="" disabled>Select a platform</option>{PLATFORM_OPTIONS.map((option) => <option key={option}>{option}</option>)}</select></label>
     </div>
