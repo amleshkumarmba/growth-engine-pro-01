@@ -347,16 +347,29 @@ export const submitLead = createServerFn({ method: "POST" })
     const startOfDayIst = new Date(createdAt.getTime());
     startOfDayIst.setUTCHours(startOfDayIst.getUTCHours() + 5, startOfDayIst.getUTCMinutes() + 30, 0, 0);
     const dayStart = new Date(Date.UTC(startOfDayIst.getUTCFullYear(), startOfDayIst.getUTCMonth(), startOfDayIst.getUTCDate()) - 5.5 * 3_600_000);
-    const { count } = await client
-      .from("leads")
-      .select("id", { count: "exact", head: true })
-      .gte("created_at", dayStart.toISOString());
+    // Counting needs to bypass row-level security: visitors have no read access to
+    // leads, so an anon count always returns null and every lead would collide on
+    // BSX-…-0001.
+    let count: number | null = null;
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const result = await supabaseAdmin
+        .from("leads")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", dayStart.toISOString());
+      count = result.count ?? null;
+    } catch (cause) {
+      console.error("Lead count failed:", cause);
+    }
 
     let leadRef = leadRefFor((count ?? 0) + 1, createdAt);
     let inserted = false;
-    for (let attempt = 0; attempt < 5 && !inserted; attempt += 1) {
+    for (let attempt = 0; attempt < 25 && !inserted; attempt += 1) {
       const { error } = await client.from("leads").insert({
         source: data.source,
+        // Required explicitly: the insert policy checks status, and relying on the
+        // column default fails the row-level security check.
+        status: "new",
         full_name: data.fullName,
         email: data.email,
         phone: data.phone || null,
