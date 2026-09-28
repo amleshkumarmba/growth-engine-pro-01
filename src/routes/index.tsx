@@ -47,8 +47,8 @@ function track(event: string, details: Record<string, string> = {}) {
 }
 
 const PLATFORM_OPTIONS = ["Zepto", "Instamart", "Blinkit", "Flipkart Minutes", "Amazon Now"];
-const WEBINAR_DATE = new Date("2026-09-27T23:59:59+05:30");
-const WEBINAR_DATE_LABEL = "27th September 2026";
+const WEBINAR_DATE = new Date("2026-10-04T10:30:00+05:30");
+const WEBINAR_DATE_LABEL = "4th October 2026, 10:30 AM";
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
