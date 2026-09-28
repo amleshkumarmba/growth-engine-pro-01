@@ -46,7 +46,7 @@ function track(event: string, details: Record<string, string> = {}) {
   win.dataLayer.push({ event, ...details });
 }
 
-const PLATFORM_OPTIONS = ["Zepto", "Instamart", "Blinkit", "Flipkart Minutes", "Amazon Now"];
+const PLATFORM_OPTIONS = ["Amazon India", "Flipkart", "Meesho", "Myntra", "AJIO", "Nykaa", "Blinkit", "Zepto", "Swiggy Instamart", "BigBasket / BB Now", "Flipkart Minutes", "Amazon Now / Fresh", "Other"];
 const WEBINAR_DATE = new Date("2026-10-04T10:30:00+05:30");
 const WEBINAR_DATE_LABEL = "4th October 2026, 10:30 AM";
 
