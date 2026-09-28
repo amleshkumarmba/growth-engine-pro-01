@@ -10,7 +10,7 @@ export const Route = createFileRoute("/thank-you")({
   head: () => ({
     meta: [
       { title: "You're Registered | BscaleX Free Marketplace Webinar" },
-      { name: "description", content: "Your free seat for the BscaleX marketplace growth webinar on 27th September 2026 is confirmed. Join the WhatsApp community to get the joining link." },
+      { name: "description", content: "Your free seat for the BscaleX marketplace growth webinar on 4th October 2026 at 10:30 AM is confirmed. Join the WhatsApp community to get the joining link." },
       { property: "og:title", content: "You're Registered | BscaleX Free Marketplace Webinar" },
       { property: "og:description", content: "Seat confirmed. Join the WhatsApp community to receive the joining link and reminders." },
       { property: "og:type", content: "website" },
@@ -22,8 +22,8 @@ export const Route = createFileRoute("/thank-you")({
   component: ThankYouPage,
 });
 
-const WEBINAR_DATE = new Date("2026-09-27T23:59:59+05:30");
-const WEBINAR_DATE_LABEL = "27th September 2026";
+const WEBINAR_DATE = new Date("2026-10-04T10:30:00+05:30");
+const WEBINAR_DATE_LABEL = "4th October 2026, 10:30 AM";
 const WHATSAPP_COMMUNITY_URL = "https://chat.whatsapp.com/FkuBkYpKFZO2MmzMayll8E";
 
 function track(event: string, details: Record<string, string> = {}) {
