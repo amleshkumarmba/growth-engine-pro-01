@@ -12,6 +12,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { submitLead } from "@/lib/leads.functions";
 import { caseStudies, faqs, pillars, problems, services, siteConfig, testimonials } from "@/lib/site-content";
 import { useSeatsLeft } from "@/lib/seats";
+import { WEBINAR_DATE, WEBINAR_DATE_LABEL } from "@/lib/webinar";
 import { captureAttribution, getAttributionPayload } from "@/lib/attribution";
 import portrait from "@/assets/bharat-hudadalli.jpg";
 import logo from "@/assets/bscalex-logo.png.asset.json";
@@ -47,8 +48,6 @@ function track(event: string, details: Record<string, string> = {}) {
 }
 
 const PLATFORM_OPTIONS = ["Amazon India", "Flipkart", "Meesho", "Myntra", "AJIO", "Nykaa", "Blinkit", "Zepto", "Swiggy Instamart", "BigBasket / BB Now", "Flipkart Minutes", "Amazon Now / Fresh", "Other"];
-const WEBINAR_DATE = new Date("2026-10-04T10:30:00+05:30");
-const WEBINAR_DATE_LABEL = "4th October 2026, 10:30 AM";
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
