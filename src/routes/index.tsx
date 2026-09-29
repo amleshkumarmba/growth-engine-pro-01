@@ -12,6 +12,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { submitLead } from "@/lib/leads.functions";
 import { caseStudies, faqs, pillars, problems, services, siteConfig, testimonials } from "@/lib/site-content";
 import { useSeatsLeft } from "@/lib/seats";
+import { WEBINAR_DATE, WEBINAR_DATE_LABEL } from "@/lib/webinar";
 import { captureAttribution, getAttributionPayload } from "@/lib/attribution";
 import portrait from "@/assets/bharat-hudadalli.jpg";
 import logo from "@/assets/bscalex-logo.png.asset.json";

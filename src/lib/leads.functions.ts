@@ -1,13 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { WEBINAR_DATE_LABEL, WEBINAR_DATE_SHORT } from "@/lib/webinar";
 
 const SHEET_ID = "1NLoxTRP9UmnTBYOFvsAFVZbbYQq2SfBtgYGzAa6EiAI";
 const SHEET_RANGE = "Sheet1!A:BN";
 const SITE_URL = "https://workshop.bscalex.com/";
 const THANK_YOU_URL = "https://workshop.bscalex.com/thank-you";
 const WHATSAPP_COMMUNITY_URL = "https://chat.whatsapp.com/FkuBkYpKFZO2MmzMayll8E";
-const WEBINAR_DATE_LABEL = "4th October 2026, 10:30 AM";
 const LEAD_NOTIFICATION_TO = "bharat.hudadalli@gmail.com";
 
 export const SHEET_HEADER = [
@@ -280,7 +280,7 @@ async function sendThankYouEmail(lead: LeadRecord) {
 </body>
 </html>`;
 
-  await sendGmailMessage(lead.email, "Your Free Seat Is Confirmed - BscaleX Webinar (4th Oct, 10:30 AM)", html);
+  await sendGmailMessage(lead.email, `Your Free Seat Is Confirmed - BscaleX Webinar (${WEBINAR_DATE_SHORT})`, html);
 }
 
 async function sendLeadEmail(lead: LeadRecord) {
