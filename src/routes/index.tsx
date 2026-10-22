@@ -62,7 +62,7 @@ function openRegistrationForm() {
   }, 600);
 }
 
-function CTA({ children = "Reserve My Seat", compact = false }: { children?: ReactNode; compact?: boolean }) {
+function CTA({ children = "Reserve My Slot", compact = false }: { children?: ReactNode; compact?: boolean }) {
   return <Button variant="hero" size={compact ? "default" : "xl"} onClick={() => { track("cta_click", { label: String(children) }); openRegistrationForm(); }}>{children}<ArrowRight /></Button>;
 }
 
@@ -72,7 +72,7 @@ function UrgencyBadge({ children }: { children: ReactNode }) {
 
 function SeatsBadge({ withDate = false }: { withDate?: boolean }) {
   const seats = useSeatsLeft();
-  return <UrgencyBadge>Only {seats} seats left{withDate ? ` for ${WEBINAR_DATE_LABEL}` : ""}</UrgencyBadge>;
+  return <UrgencyBadge>Only {seats} slots left{withDate ? ` for ${WEBINAR_DATE_LABEL}` : ""}</UrgencyBadge>;
 }
 
 function DateHighlight() {
@@ -99,7 +99,7 @@ function Navbar() {
   return <header className={`fixed inset-x-0 top-0 z-50 border-b transition-all ${solid || open ? "border-border/20 bg-surface-dark/95 backdrop-blur-xl" : "border-transparent bg-transparent"}`}>
     <nav className="section-shell grid h-20 grid-cols-[minmax(0,1fr)_auto] items-center gap-5" aria-label="Primary navigation">
       <a href="#top" className="flex min-w-0 items-center" aria-label="BscaleX home"><img src={logo.url} alt="BscaleX" className="h-14 w-auto object-contain object-left" /></a>
-       <div className="hidden items-center gap-7 lg:flex">{links.map(([label, id]) => <a key={id} href={`#${id}`} className="text-xs font-semibold text-on-dark-muted transition-colors hover:text-on-dark">{label}</a>)}<CTA compact>Reserve My Seat</CTA></div>
+       <div className="hidden items-center gap-7 lg:flex">{links.map(([label, id]) => <a key={id} href={`#${id}`} className="text-xs font-semibold text-on-dark-muted transition-colors hover:text-on-dark">{label}</a>)}<CTA compact>Reserve My Slot</CTA></div>
       <Button variant="ghost" size="icon" className="text-on-dark hover:bg-on-dark/10 hover:text-on-dark lg:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? "Close menu" : "Open menu"}>{open ? <X /> : <Menu />}</Button>
     </nav>
      {open && <div className="border-t border-border/20 bg-surface-dark px-4 pb-6 lg:hidden">{links.map(([label, id]) => <a key={id} href={`#${id}`} onClick={() => setOpen(false)} className="block border-b border-border/15 py-4 font-semibold text-on-dark">{label}</a>)}<div className="pt-5"><CTA /></div></div>}
@@ -136,7 +136,7 @@ function RegistrationForm({ source = "contact", formName = "registration" }: { s
     event.preventDefault(); setState("loading"); setError("");
     const form = new FormData(event.currentTarget);
     try {
-      const result = await submit({ data: { source, formName, fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", city: String(form.get("city") ?? ""), platform: String(form.get("platform") ?? ""), message: "Webinar seat registration — payment pending", attribution: getAttributionPayload() } });
+      const result = await submit({ data: { source, formName, fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", city: String(form.get("city") ?? ""), platform: String(form.get("platform") ?? ""), message: "Webinar slot registration — payment pending", attribution: getAttributionPayload() } });
       // Handed to the thank-you page so the Meta Lead event fires once per real registration.
       window.sessionStorage.setItem("bscalex_last_lead", JSON.stringify({ leadRef: result.leadRef, eventId: result.eventId, form: formName }));
       track("form_submitted", { form: formName, lead_id: result.leadRef, event_id: result.eventId });
@@ -147,7 +147,7 @@ function RegistrationForm({ source = "contact", formName = "registration" }: { s
   const label = "text-xs font-bold uppercase tracking-[0.1em] text-on-dark";
   return <form onSubmit={onSubmit} onFocus={() => track("form_started", { form: formName })} className="rounded-2xl border border-on-dark/15 bg-surface-dark-raised p-5 shadow-2xl sm:p-7">
     <div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-primary px-3 py-1.5 text-sm font-extrabold uppercase tracking-[0.08em] text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.45)]">{WEBINAR_SEAT_PRICE_LABEL} Only</span><SeatsBadge /></div>
-    <h2 className="mt-5 font-display text-2xl font-semibold uppercase leading-tight text-on-dark sm:text-3xl">Reserve Your Seat <span className="rounded-md bg-primary px-2 text-primary-foreground">@ {WEBINAR_SEAT_PRICE_LABEL} Only</span></h2>
+    <h2 className="mt-5 font-display text-2xl font-semibold uppercase leading-tight text-on-dark sm:text-3xl">Reserve Your Slot <span className="rounded-md bg-primary px-2 text-primary-foreground">@ {WEBINAR_SEAT_PRICE_LABEL} Only</span></h2>
     <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-on-dark-muted">90 minutes live · English only · <DateHighlight /></p>
     <div className="mt-5 flex items-center justify-between gap-4"><p className="text-sm font-semibold text-on-dark">Registration closes in</p><p className="flex items-center gap-2 text-xs font-bold text-primary"><Clock3 className="h-4 w-4"/>Limited slots</p></div>
     <div className="mt-3"><Countdown /></div>
@@ -160,7 +160,7 @@ function RegistrationForm({ source = "contact", formName = "registration" }: { s
       <label className={`${label} sm:col-span-2`}>Where Do You Want to List Your Products?<select required name="platform" defaultValue="" className={`${field} mt-2`}><option value="" disabled>Select a platform</option>{PLATFORM_OPTIONS.map((option) => <option key={option}>{option}</option>)}</select></label>
     </div>
     {error && <p role="alert" className="mt-3 text-sm text-destructive">{error}</p>}
-    <Button disabled={state === "loading"} type="submit" variant="hero" size="xl" className="mt-5 w-full">{state === "loading" ? "Reserving…" : "Reserve My Seat"}<ArrowRight /></Button>
+    <Button disabled={state === "loading"} type="submit" variant="hero" size="xl" className="mt-5 w-full">{state === "loading" ? "Reserving…" : "Reserve My Slot"}<ArrowRight /></Button>
     <p className="mt-4 text-center text-xs text-on-dark-muted">By registering you agree to receive session reminders and updates on email and WhatsApp. You can opt out any time.</p>
   </form>;
 }
@@ -173,7 +173,7 @@ function Hero() {
          <h1 className="max-w-3xl text-5xl font-semibold leading-[0.98] sm:text-6xl lg:text-7xl">Scale Your D2C Brand. <span className="text-primary">Faster.</span></h1>
          <p className="mt-7 max-w-xl text-lg leading-8 text-on-dark-muted">Get the end-to-end onboarding and growth strategy that gets your brand listed, visible and selling across India's leading marketplaces.</p>
          <p className="mt-4 max-w-xl text-sm leading-6 text-on-dark-muted">Amazon, Flipkart, Blinkit, Zepto and Instamart all play by different rules. Replace guesswork with hands-on, platform-specific support.</p>
-         <div className="mt-9 flex flex-col items-start gap-3 sm:flex-row"><CTA>Reserve My Seat</CTA><Button variant="quiet" size="xl" className="border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" onClick={() => scrollTo("services")}>Explore Services</Button></div>
+         <div className="mt-9 flex flex-col items-start gap-3 sm:flex-row"><CTA>Reserve My Slot</CTA><Button variant="quiet" size="xl" className="border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" onClick={() => scrollTo("services")}>Explore Services</Button></div>
       </div>
        <div id="register" className="mx-auto w-full max-w-[31rem] scroll-mt-24"><RegistrationForm source="contact" formName="hero_registration" /></div>
     </div>
@@ -211,7 +211,7 @@ function Results() {
 }
 
 function About() {
-   return <section id="about" className="py-24 lg:py-32"><div className="section-shell grid items-center gap-12 lg:grid-cols-[.82fr_1.18fr] lg:gap-20"><div><div className="flex justify-center"><img src={portrait} alt="Bharat Hudadalli" width={1600} height={1067} loading="lazy" className="w-full max-w-[280px] rounded-2xl border border-border bg-card object-contain shadow-xl"/></div></div><div><SectionHeading eyebrow="Meet your growth architect" title={`Meet ${siteConfig.name}`} /><p className="mt-7 text-lg leading-8 text-muted-foreground">An e-commerce and quick-commerce growth consultant based in Bengaluru, and founder of E-Com Brands Launchpad.</p><blockquote className="my-8 border-l-2 border-primary pl-6 font-display text-2xl font-medium leading-9">“Hands-on, platform-specific experience. Not recycled playbooks.”</blockquote><div className="grid gap-3 sm:grid-cols-2">{["D2C brand onboarding", "Marketplace account health", "Q-commerce strategy", "Direct 1:1 access"].map((x) => <p key={x} className="flex items-center gap-3 text-sm font-semibold"><Check className="h-4 w-4 text-primary"/>{x}</p>)}</div><div className="mt-9"><CTA>Reserve My Seat</CTA></div></div></div></section>;
+   return <section id="about" className="py-24 lg:py-32"><div className="section-shell grid items-center gap-12 lg:grid-cols-[.82fr_1.18fr] lg:gap-20"><div><div className="flex justify-center"><img src={portrait} alt="Bharat Hudadalli" width={1600} height={1067} loading="lazy" className="w-full max-w-[280px] rounded-2xl border border-border bg-card object-contain shadow-xl"/></div></div><div><SectionHeading eyebrow="Meet your growth architect" title={`Meet ${siteConfig.name}`} /><p className="mt-7 text-lg leading-8 text-muted-foreground">An e-commerce and quick-commerce growth consultant based in Bengaluru, and founder of E-Com Brands Launchpad.</p><blockquote className="my-8 border-l-2 border-primary pl-6 font-display text-2xl font-medium leading-9">“Hands-on, platform-specific experience. Not recycled playbooks.”</blockquote><div className="grid gap-3 sm:grid-cols-2">{["D2C brand onboarding", "Marketplace account health", "Q-commerce strategy", "Direct 1:1 access"].map((x) => <p key={x} className="flex items-center gap-3 text-sm font-semibold"><Check className="h-4 w-4 text-primary"/>{x}</p>)}</div><div className="mt-9"><CTA>Reserve My Slot</CTA></div></div></div></section>;
 }
 
 function WhyMe() {
@@ -232,7 +232,7 @@ function FAQ() {
 }
 
 function FinalCTA() {
-   return <section className="dark-grid bg-surface-dark py-24 text-center text-on-dark"><div className="section-shell"><p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Your next growth move</p><h2 className="mx-auto mt-5 max-w-4xl text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">Ready to Get Listed, Visible and Selling?</h2><p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-on-dark-muted">Join the webinar for <strong className="text-primary">{WEBINAR_SEAT_PRICE_LABEL} only</strong> on <DateHighlight />. Seats are limited — reserve yours now.</p><div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"><CTA /><Button variant="quiet" size="xl" className="border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" onClick={() => scrollTo("services")}>Explore Services</Button></div></div></section>;
+   return <section className="dark-grid bg-surface-dark py-24 text-center text-on-dark"><div className="section-shell"><p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Your next growth move</p><h2 className="mx-auto mt-5 max-w-4xl text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">Ready to Get Listed, Visible and Selling?</h2><p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-on-dark-muted">Join the webinar for <strong className="text-primary">{WEBINAR_SEAT_PRICE_LABEL} only</strong> on <DateHighlight />. Slots are limited — reserve yours now.</p><div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"><CTA /><Button variant="quiet" size="xl" className="border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" onClick={() => scrollTo("services")}>Explore Services</Button></div></div></section>;
 }
 
 function Contact() {
@@ -255,5 +255,5 @@ function LandingPage() {
     const onScroll = () => { const depth = Math.round(((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight) * 100); [25,50,75,90].forEach((mark) => { if (depth >= mark && !marks.has(mark)) { marks.add(mark); track("scroll_depth", { percent: String(mark) }); } }); };
     window.addEventListener("scroll", onScroll, { passive: true }); return () => window.removeEventListener("scroll", onScroll);
   }, []);
-   return <><Navbar/><main><Hero/><TrustBar/><Problems/><Services/><Process/><Results/><About/><WhyMe/><Testimonials/><LeadMagnet/><FAQ/><FinalCTA/><Contact/></main><Footer/><div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-surface-dark p-3 lg:hidden"><Button variant="hero" className="h-12 w-full" onClick={() => { track("cta_click", { label: "mobile_sticky" }); openRegistrationForm(); }}>Reserve My Seat <ArrowRight /></Button></div></>;
+   return <><Navbar/><main><Hero/><TrustBar/><Problems/><Services/><Process/><Results/><About/><WhyMe/><Testimonials/><LeadMagnet/><FAQ/><FinalCTA/><Contact/></main><Footer/><div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-surface-dark p-3 lg:hidden"><Button variant="hero" className="h-12 w-full" onClick={() => { track("cta_click", { label: "mobile_sticky" }); openRegistrationForm(); }}>Reserve My Slot <ArrowRight /></Button></div></>;
 }
