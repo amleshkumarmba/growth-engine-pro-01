@@ -62,10 +62,10 @@ export const testimonials = [
 ] as const;
 
 export const faqs = [
-  ["When is the free webinar?", `The next live webinar is on ${WEBINAR_DATE_LABEL}. It is a 90-minute session in English only, and it is completely free — but the number of seats is limited.`],
+  ["When is the webinar?", `The next live webinar is on ${WEBINAR_DATE_LABEL}. It is a 90-minute session in English only. Seats are limited and cost just ₹49.`],
   ["Which platforms does Bharat specialize in?", "Amazon, Flipkart, Myntra, Blinkit, Zepto, Swiggy Instamart, BigBasket, Nykaa and Tata Cliq."],
   ["Can you help with both onboarding and ongoing management?", "Yes. Support can cover initial listings and compliance, followed by catalog, inventory, pricing and account-health management."],
   ["Do you offer quick-commerce strategy?", "Yes. The work includes platform-specific positioning, SKU selection and growth planning for fast-delivery channels."],
   ["Can I book a one-time strategy session?", "Yes. A focused 1:1 session can help diagnose your current bottleneck and create a practical action plan."],
-  ["How do I get started?", "Reserve your free seat for the webinar through the form. Bharat will review your details and share the joining link on WhatsApp and email."],
+  ["How do I get started?", "Book your webinar seat for ₹49 through the Pay Now button, then complete the short registration form. Bharat will share the joining link on WhatsApp and email."],
 ] as const;
