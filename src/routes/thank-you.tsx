@@ -10,9 +10,9 @@ import logo from "@/assets/bscalex-logo.png.asset.json";
 export const Route = createFileRoute("/thank-you")({
   head: () => ({
     meta: [
-      { title: "You're Registered | BscaleX Marketplace Webinar" },
-      { name: "description", content: `Your seat for the BscaleX marketplace growth webinar on ${WEBINAR_DATE_LABEL} is confirmed. Join the WhatsApp community to get the joining link.` },
-      { property: "og:title", content: "You're Registered | BscaleX Marketplace Webinar" },
+      { title: "You're Registered | BscaleX Free Marketplace Webinar" },
+      { name: "description", content: `Your free seat for the BscaleX marketplace growth webinar on ${WEBINAR_DATE_LABEL} is confirmed. Join the WhatsApp community to get the joining link.` },
+      { property: "og:title", content: "You're Registered | BscaleX Free Marketplace Webinar" },
       { property: "og:description", content: "Seat confirmed. Join the WhatsApp community to receive the joining link and reminders." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -93,7 +93,7 @@ function ThankYouPage() {
       {
         content_name: "BScalex Webinar Registration",
         content_category: "Webinar",
-        value: 49,
+        value: 0,
         currency: "INR",
       },
       { eventID: eventId },
@@ -119,12 +119,12 @@ function ThankYouPage() {
 
     <main className="section-shell py-16 text-center lg:py-24">
       <span className="mx-auto grid h-16 w-16 place-items-center rounded-full border-2 border-primary text-primary"><Check className="h-8 w-8" /></span>
-      <p className="mt-7 inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-primary">Seat confirmed</p>
+      <p className="mt-7 inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-primary">Free seat confirmed</p>
       <h1 className="mt-6 font-display text-4xl font-semibold uppercase leading-[1.05] sm:text-5xl lg:text-6xl">
         You're In.<br /><span className="text-primary">One Step Left.</span>
       </h1>
       <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-on-dark-muted">
-        Your seat for the 90-minute marketplace growth webinar on{" "}
+        Your seat for the free 90-minute marketplace growth webinar on{" "}
         <span className="inline-flex items-center gap-1.5 rounded-md bg-primary/15 px-2 py-0.5 font-bold text-primary"><CalendarDays className="h-4 w-4" />{WEBINAR_DATE_LABEL}</span>{" "}
         is booked. The joining link goes out inside our WhatsApp community — join it now so you don't miss it.
       </p>
@@ -136,7 +136,7 @@ function ThankYouPage() {
         <p className="mt-3 text-sm text-on-dark-muted">Joining link, reminders and Q&amp;A — all shared here first.</p>
         <Button variant="hero" size="xl" className="mt-7 w-full sm:w-auto" asChild>
           <a href={WHATSAPP_COMMUNITY_URL} target="_blank" rel="noreferrer" onClick={() => track("whatsapp_click", { label: "thank_you_primary" })}>
-            <MessageCircle /> Join the WhatsApp Community
+            <MessageCircle /> Join the Free WhatsApp Community
           </a>
         </Button>
         <p className="mt-4 text-xs text-on-dark-muted">Takes 5 seconds · No spam · Leave any time</p>

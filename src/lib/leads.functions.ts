@@ -248,13 +248,13 @@ async function sendThankYouEmail(lead: LeadRecord) {
 <body style="margin:0;padding:0;background-color:#ffffff;font-family:Arial,Helvetica,sans-serif;">
   <div style="max-width:560px;margin:0 auto;padding:32px 20px;">
     <div style="text-align:center;padding-bottom:24px;">
-      <div style="display:inline-block;background-color:#16a34a;color:#ffffff;font-size:12px;font-weight:bold;letter-spacing:1px;padding:6px 16px;border-radius:999px;">SEAT CONFIRMED &bull; &#8377;49 PAID</div>
+      <div style="display:inline-block;background-color:#16a34a;color:#ffffff;font-size:12px;font-weight:bold;letter-spacing:1px;padding:6px 16px;border-radius:999px;">100% FREE &bull; SEAT CONFIRMED</div>
     </div>
     <h1 style="margin:0 0 8px;font-size:26px;line-height:1.25;color:#111111;text-align:center;">You're In, ${firstName}!</h1>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#444444;text-align:center;">
-      Your seat for the <strong>BscaleX Marketplace Growth Webinar</strong> on
+      Your free seat for the <strong>BscaleX Marketplace Growth Webinar</strong> on
       <strong style="color:#16a34a;">${WEBINAR_DATE_LABEL}</strong> is confirmed.
-      90 minutes live &bull; English only.
+      90 minutes live &bull; English only &bull; No fees, ever.
     </p>
     <div style="background-color:#f6fef9;border:1px solid #bbf7d0;border-radius:12px;padding:24px;text-align:center;margin-bottom:20px;">
       <p style="margin:0 0 6px;font-size:16px;font-weight:bold;color:#111111;">One step left: join the attendees-only community</p>
