@@ -7,6 +7,6 @@ describe("webinar seat offer", () => {
   });
 
   test("payment uses the supplied Razorpay link", () => {
-    expect(WEBINAR_PAYMENT_URL).toBe("https://rzp.io/rzp/8jxhayd");
+    expect(WEBINAR_PAYMENT_URL).toBe("https://razorpay.me/@bscalex?amount=rZC5NMufSVtgb9QV3szYxw%3D%3D");
   });
 });
