@@ -130,23 +130,23 @@ function ThankYouPage() {
       </p>
       {leadRef && <p className="mt-4 text-sm font-bold uppercase tracking-[0.12em] text-on-dark-muted">Registration ID: <span className="text-primary">{leadRef}</span></p>}
 
-      <div className="mx-auto mt-12 max-w-3xl rounded-2xl border-2 border-primary/60 bg-surface-dark-raised p-7 sm:p-10">
-        <p className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-primary"><CreditCard className="h-4 w-4" />Seat confirmation</p>
-        <h2 className="mt-4 font-display text-2xl font-semibold uppercase sm:text-3xl">Pay {WEBINAR_SEAT_PRICE_LABEL} to Confirm Your Seat</h2>
-        <p className="mt-3 text-sm text-on-dark-muted">Complete your payment, then join the community for the joining link, reminders and Q&amp;A.</p>
+      <div className="mx-auto mt-12 max-w-3xl rounded-2xl border-2 border-primary/60 bg-surface-dark-raised p-8 sm:p-12">
+        <p className="flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-primary"><CreditCard className="h-5 w-5" />Seat confirmation</p>
+        <h2 className="mt-4 font-display text-3xl font-semibold uppercase sm:text-4xl">Pay {WEBINAR_SEAT_PRICE_LABEL} to Confirm Your Seat</h2>
+        <p className="mt-3 text-base text-on-dark-muted">Complete your payment, then join the community for the joining link, reminders and Q&amp;A.</p>
         <div className="mt-7 flex flex-col gap-4">
-        <Button variant="hero" size="xl" className="w-full whitespace-normal" asChild>
+        <Button variant="hero" size="xl" className="w-full whitespace-normal text-base sm:text-lg" asChild>
           <a href={WEBINAR_PAYMENT_URL} target="_blank" rel="noopener noreferrer" onClick={() => track("payment_link_click", { label: "thank_you", lead_id: leadRef })}>
             <CreditCard /> Pay Now — {WEBINAR_SEAT_PRICE_LABEL} Only
           </a>
         </Button>
-        <Button variant="quiet" size="xl" className="w-full whitespace-normal border-on-dark/25 text-on-dark hover:border-primary hover:text-primary" asChild>
+        <Button variant="quiet" size="xl" className="w-full whitespace-normal border-on-dark/25 text-on-dark hover:border-primary hover:text-primary text-base sm:text-lg" asChild>
           <a href={WHATSAPP_COMMUNITY_URL} target="_blank" rel="noreferrer" onClick={() => track("whatsapp_click", { label: "thank_you_primary" })}>
             <MessageCircle /> Join the WhatsApp Community
           </a>
         </Button>
         </div>
-        <p className="mt-4 text-xs text-on-dark-muted">Takes 5 seconds · No spam · Leave any time</p>
+        <p className="mt-4 text-sm text-on-dark-muted">Takes 5 seconds · No spam · Leave any time</p>
       </div>
 
       <div className="mx-auto mt-8 grid max-w-4xl gap-4 text-left sm:grid-cols-3">
