@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { ArrowRight, CalendarDays, Clock3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { submitLead } from "@/lib/leads.functions";
@@ -44,8 +44,7 @@ export function DateHighlight() {
 
 export function Countdown() {
   const [remaining, setRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  useState(() => {
-    if (typeof window === "undefined") return;
+  useEffect(() => {
     const update = () => {
       const difference = Math.max(0, WEBINAR_DATE.getTime() - Date.now());
       setRemaining({
