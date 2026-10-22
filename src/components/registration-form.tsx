@@ -57,7 +57,7 @@ export function Countdown() {
     update();
     const timer = window.setInterval(update, 1000);
     return () => window.clearInterval(timer);
-  });
+  }, []);
   return (
     <div className="grid grid-cols-4 gap-2" aria-label={`${remaining.days} days, ${remaining.hours} hours, ${remaining.minutes} minutes and ${remaining.seconds} seconds remaining`}>
       {[[remaining.days, "Days"], [remaining.hours, "Hours"], [remaining.minutes, "Minutes"], [remaining.seconds, "Seconds"]].map(([value, label]) => (
