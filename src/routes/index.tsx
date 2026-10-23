@@ -47,7 +47,7 @@ function track(event: string, details: Record<string, string> = {}) {
   win.dataLayer.push({ event, ...details });
 }
 
-const PLATFORM_OPTIONS = ["Amazon India", "Flipkart", "Meesho", "Myntra", "AJIO", "Nykaa", "Blinkit", "Zepto", "Swiggy Instamart", "BigBasket / BB Now", "Flipkart Minutes", "Amazon Now / Fresh", "Other"];
+const PLATFORM_OPTIONS = ["Blinkit", "Swiggy Instamart", "Zepto", "Amazon Now", "Flipkart Minutes", "BigBasket", "Other marketplaces"];
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -136,7 +136,7 @@ function RegistrationForm({ source = "contact", formName = "registration" }: { s
     event.preventDefault(); setState("loading"); setError("");
     const form = new FormData(event.currentTarget);
     try {
-      const result = await submit({ data: { source, formName, fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", city: String(form.get("city") ?? ""), platform: String(form.get("platform") ?? ""), message: "Webinar slot registration — payment pending", attribution: getAttributionPayload() } });
+      const result = await submit({ data: { source, formName, fullName: String(form.get("fullName") ?? ""), email: String(form.get("email") ?? ""), phone: String(form.get("phone") ?? ""), companyName: "", websiteUrl: "", monthlyBudget: "", brandName: String(form.get("brandName") ?? ""), platform: String(form.get("platform") ?? ""), message: "Webinar slot registration — payment pending", attribution: getAttributionPayload() } });
       // Handed to the thank-you page so the Meta Lead event fires once per real registration.
       window.sessionStorage.setItem("bscalex_last_lead", JSON.stringify({ leadRef: result.leadRef, eventId: result.eventId, form: formName }));
       track("form_submitted", { form: formName, lead_id: result.leadRef, event_id: result.eventId });
@@ -156,7 +156,7 @@ function RegistrationForm({ source = "contact", formName = "registration" }: { s
       <label className={label}>Name<input required name="fullName" minLength={2} maxLength={100} autoComplete="name" placeholder="Your full name" className={`${field} mt-2`}/></label>
       <label className={label}>Email<input required name="email" type="email" maxLength={255} autoComplete="email" placeholder="you@email.com" className={`${field} mt-2`}/></label>
       <label className={label}>WhatsApp Number<input required name="phone" type="tel" inputMode="numeric" pattern="[6-9][0-9]{9}" minLength={10} maxLength={10} autoComplete="tel" placeholder="9876543210" title="Enter a 10-digit mobile number" onInput={(event) => { const input = event.currentTarget; input.value = input.value.replace(/\D/g, "").slice(0, 10); }} className={`${field} mt-2`}/><span className="mt-1 block text-[0.65rem] font-medium normal-case tracking-normal text-on-dark-muted">10-digit mobile number, without +91</span></label>
-      <label className={label}>City<input required name="city" maxLength={120} autoComplete="address-level2" placeholder="Mumbai" className={`${field} mt-2`}/></label>
+      <label className={label}>Brand Name<input required name="brandName" minLength={2} maxLength={120} autoComplete="organization" placeholder="Your brand name" className={`${field} mt-2`}/></label>
       <label className={`${label} sm:col-span-2`}>Where Do You Want to List Your Products?<select required name="platform" defaultValue="" className={`${field} mt-2`}><option value="" disabled>Select a platform</option>{PLATFORM_OPTIONS.map((option) => <option key={option}>{option}</option>)}</select></label>
     </div>
     {error && <p role="alert" className="mt-3 text-sm text-destructive">{error}</p>}
